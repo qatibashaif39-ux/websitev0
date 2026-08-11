@@ -6,7 +6,7 @@ import { CURRENCY } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { createOrder } from "@/lib/orders";
 import { EMIRATES, EMIRATE_DELIVERY_FEE } from "@/lib/emirates";
-import { supabase } from "@/integrations/supabase/client";
+import { getAppSetting } from "@/lib/settings";
 import { d1 } from "@/lib/d1";
 
 export const Route = createFileRoute("/checkout")({
@@ -56,18 +56,11 @@ function Checkout() {
   const [minQty, setMinQty] = useState(2);
 
   useEffect(() => {
-    supabase
-      .from("app_settings")
-      .select("value")
-      .eq("key", "min_order_qty")
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.value) {
-          const n = parseInt(data.value, 10);
-          if (!isNaN(n) && n > 0) setMinQty(n);
-        }
-      })
-      .catch(() => {});
+    const minQtyVal = getAppSetting("min_order_qty");
+    if (minQtyVal) {
+      const n = parseInt(minQtyVal, 10);
+      if (!isNaN(n) && n > 0) setMinQty(n);
+    }
 
     // Trigger Meta Pixel InitiateCheckout event
     if (typeof window !== "undefined" && (window as any).fbq) {

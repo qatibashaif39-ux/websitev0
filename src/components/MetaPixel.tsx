@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getAppSetting } from "@/lib/settings";
 
 declare global {
   interface Window {
@@ -12,17 +12,10 @@ export function MetaPixel() {
   const [pixelId, setPixelId] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("app_settings")
-      .select("value")
-      .eq("key", "meta_pixel_id")
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.value && data.value.trim().length > 0) {
-          setPixelId(data.value.trim());
-        }
-      })
-      .catch(() => {});
+    const val = getAppSetting("meta_pixel_id").trim();
+    if (val) {
+      setPixelId(val);
+    }
   }, []);
 
   useEffect(() => {

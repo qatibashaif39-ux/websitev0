@@ -1,23 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { Facebook, Instagram, MessageCircle, Ghost } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-
-const SOCIAL_KEYS = [
-    "social_whatsapp",
-    "social_facebook",
-    "social_snapchat",
-    "social_instagram",
-] as const;
+import { getAppSettings } from "@/lib/settings";
 
 async function fetchSocials() {
-    const { data, error } = await supabase
-        .from("app_settings")
-        .select("key, value")
-        .in("key", SOCIAL_KEYS as unknown as string[]);
-    if (error) throw error;
-    const map: Record<string, string> = {};
-    for (const row of data ?? []) map[row.key] = row.value ?? "";
-    return map;
+    const settings = getAppSettings();
+    return {
+        social_whatsapp: settings.social_whatsapp,
+        social_facebook: settings.social_facebook,
+        social_snapchat: settings.social_snapchat,
+        social_instagram: settings.social_instagram,
+    };
 }
 
 function normalizeWhatsapp(v: string) {

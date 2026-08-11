@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { getAppSetting } from "@/lib/settings";
 
 declare global {
   interface Window {
@@ -11,13 +11,7 @@ declare global {
 }
 
 async function fetchPixelId(): Promise<string> {
-  const { data, error } = await supabase
-    .from("app_settings")
-    .select("value")
-    .eq("key", "tiktok_pixel_id")
-    .maybeSingle();
-  if (error) return "";
-  return (data?.value ?? "").trim();
+  return getAppSetting("tiktok_pixel_id").trim();
 }
 
 function loadPixel(pixelId: string) {
