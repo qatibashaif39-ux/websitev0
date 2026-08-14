@@ -6,5 +6,5 @@ pages_build_output_dir = "dist/client"
 
 [[d1_databases]]
 binding = "DB1"
-database_name = "db1"
+database_name = "teenliwa-db"
 database_id = "YOUR_CLOUDFLARE_D1_DATABASE_ID"

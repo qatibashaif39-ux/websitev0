@@ -17,7 +17,10 @@ export const Route = createFileRoute("/dashboard/categories")({
 
 function DashboardCategories() {
   const qc = useQueryClient();
-  const { data: categories = [], isLoading } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
   const { data: products = [] } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
   const [newName, setNewName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
@@ -58,7 +61,8 @@ function DashboardCategories() {
   });
 
   const countFor = (id: string) => products.filter((p) => p.category_id === id).length;
-  const field = "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
+  const field =
+    "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
 
   return (
     <div>
@@ -83,7 +87,11 @@ function DashboardCategories() {
           disabled={addMut.isPending || !newName.trim()}
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
         >
-          {addMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          {addMut.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="h-4 w-4" />
+          )}
           إضافة
         </button>
       </form>
@@ -93,7 +101,10 @@ function DashboardCategories() {
       ) : (
         <div className="mt-5 space-y-2">
           {categories.map((c) => (
-            <div key={c.id} className="flex items-center justify-between rounded-2xl border border-border/60 bg-card p-4">
+            <div
+              key={c.id}
+              className="flex items-center justify-between rounded-2xl border border-border/60 bg-card p-4"
+            >
               {editId === c.id ? (
                 <input
                   className={field + " ml-3"}
@@ -104,7 +115,9 @@ function DashboardCategories() {
               ) : (
                 <div>
                   <div className="font-bold">{c.name}</div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">{countFor(c.id)} منتجات</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {countFor(c.id)} منتجات
+                  </div>
                 </div>
               )}
               <div className="flex shrink-0 gap-1">
@@ -139,7 +152,8 @@ function DashboardCategories() {
                     </button>
                     <button
                       onClick={() => {
-                        if (confirm(`حذف الصنف "${c.name}"؟ ستبقى منتجاته بدون صنف.`)) removeMut.mutate(c.id);
+                        if (confirm(`حذف الصنف "${c.name}"؟ ستبقى منتجاته بدون صنف.`))
+                          removeMut.mutate(c.id);
                       }}
                       className="rounded-lg border border-destructive/40 p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
                       aria-label="حذف"

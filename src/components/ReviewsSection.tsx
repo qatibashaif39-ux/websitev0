@@ -152,12 +152,12 @@ export function ReviewsSection({ productId, productName }: ReviewsSectionProps) 
                 {rating === 5
                   ? "ممتاز جداً ⭐⭐⭐⭐⭐"
                   : rating === 4
-                  ? "جيد جداً ⭐⭐⭐⭐"
-                  : rating === 3
-                  ? "متوسط ⭐⭐⭐"
-                  : rating === 2
-                  ? "مقبول ⭐⭐"
-                  : "يحتاج تحسين ⭐"}
+                    ? "جيد جداً ⭐⭐⭐⭐"
+                    : rating === 3
+                      ? "متوسط ⭐⭐⭐"
+                      : rating === 2
+                        ? "مقبول ⭐⭐"
+                        : "يحتاج تحسين ⭐"}
               </span>
             </div>
           </div>
@@ -174,7 +174,9 @@ export function ReviewsSection({ productId, productName }: ReviewsSectionProps) 
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-muted-foreground">البريد الإلكتروني (اختياري):</label>
+              <label className="text-xs font-semibold text-muted-foreground">
+                البريد الإلكتروني (اختياري):
+              </label>
               <Input
                 type="email"
                 value={authorEmail}
@@ -205,11 +207,7 @@ export function ReviewsSection({ productId, productName }: ReviewsSectionProps) 
             >
               إلغاء
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-xl font-bold text-xs"
-            >
+            <Button type="submit" disabled={isSubmitting} className="rounded-xl font-bold text-xs">
               {isSubmitting ? "جاري النشر..." : "نشر التقييم"}
             </Button>
           </div>
@@ -267,9 +265,7 @@ export function ReviewsSection({ productId, productName }: ReviewsSectionProps) 
                 </div>
               </div>
 
-              <p className="text-sm text-foreground/90 leading-relaxed pr-10">
-                {rev.comment}
-              </p>
+              <p className="text-sm text-foreground/90 leading-relaxed pr-10">{rev.comment}</p>
             </div>
           ))
         )}

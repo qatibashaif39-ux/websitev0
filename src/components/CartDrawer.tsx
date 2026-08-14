@@ -23,7 +23,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       >
         <div className="flex items-center justify-between border-b border-border/60 p-4">
           <h2 className="text-lg font-bold">{t("cart.title")}</h2>
-          <button onClick={onClose} aria-label={t("common.close")} className="rounded-full p-1 hover:bg-secondary">
+          <button
+            onClick={onClose}
+            aria-label={t("common.close")}
+            className="rounded-full p-1 hover:bg-secondary"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -45,7 +49,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 <div className="flex flex-1 flex-col">
                   <div className="flex items-start justify-between">
                     <h3 className="text-sm font-bold">{item.product.name}</h3>
-                    <button onClick={() => remove(item.product.id)} aria-label="حذف" className="text-muted-foreground hover:text-destructive">
+                    <button
+                      onClick={() => remove(item.product.id)}
+                      aria-label="حذف"
+                      className="text-muted-foreground hover:text-destructive"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -60,7 +68,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                           setQty(item.product.id, item.qty + 1);
                         }
                       }}
-                      disabled={!!item.product.maximum_order_quantity && item.qty >= item.product.maximum_order_quantity}
+                      disabled={
+                        !!item.product.maximum_order_quantity &&
+                        item.qty >= item.product.maximum_order_quantity
+                      }
                       className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
                       aria-label="زيادة"
                     >
@@ -91,7 +102,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
         <div className="border-t border-border/60 p-4">
           <div className="mb-3 flex items-center justify-between text-base font-bold">
             <span>{t("cart.total")}</span>
-            <span className="text-primary">{total.toFixed(2)} {CURRENCY}</span>
+            <span className="text-primary">
+              {total.toFixed(2)} {CURRENCY}
+            </span>
           </div>
           <Link
             to="/checkout"

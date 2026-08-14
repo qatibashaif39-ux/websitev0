@@ -19,7 +19,7 @@ export interface ProductRow {
   sort_order: number;
   category: string;
   image: string;
-  minimum_order_quantity: number; 
+  minimum_order_quantity: number;
   maximum_order_quantity?: number | null;
 }
 
@@ -207,7 +207,9 @@ export async function createProduct(input: ProductInput) {
     category: cat?.name || "بدون صنف",
     image: input.image_url || resolveProductImage({ seed_key: "red-fig" }),
     minimum_order_quantity: input.minimum_order_quantity || 1,
-    maximum_order_quantity: input.maximum_order_quantity ? Number(input.maximum_order_quantity) : null,
+    maximum_order_quantity: input.maximum_order_quantity
+      ? Number(input.maximum_order_quantity)
+      : null,
   };
   products.push(newProduct);
   localStorage.setItem(PROD_STORAGE_KEY, JSON.stringify(products));
@@ -219,12 +221,14 @@ export async function updateProduct(id: string, input: Partial<ProductInput>) {
   const index = products.findIndex((p) => p.id === id);
   if (index >= 0) {
     const existing = products[index];
-    const cat = categories.find((c) => c.id === (input.category_id !== undefined ? input.category_id : existing.category_id));
+    const cat = categories.find(
+      (c) => c.id === (input.category_id !== undefined ? input.category_id : existing.category_id),
+    );
     products[index] = {
       ...existing,
       ...input,
       category: cat ? cat.name : existing.category,
-      image: input.image_url !== undefined ? (input.image_url || existing.image) : existing.image,
+      image: input.image_url !== undefined ? input.image_url || existing.image : existing.image,
     };
     localStorage.setItem(PROD_STORAGE_KEY, JSON.stringify(products));
   }
@@ -271,6 +275,5 @@ export async function uploadProductImage(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
-
 
 // Delivery zones removed — flat fee per emirate. See @/lib/emirates.

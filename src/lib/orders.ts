@@ -218,4 +218,3 @@ export async function attachZiinaPayment(orderId: string, ziinaPaymentId: string
     saveLocalOrder(order);
   }
 }
-

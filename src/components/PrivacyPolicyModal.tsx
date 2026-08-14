@@ -1,6 +1,24 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Lock, Eye, Truck, CreditCard, BellRing, Phone, Mail, CheckCircle2, Cookie, SlidersHorizontal } from "lucide-react";
+import {
+  ShieldCheck,
+  Lock,
+  Eye,
+  Truck,
+  CreditCard,
+  BellRing,
+  Phone,
+  Mail,
+  CheckCircle2,
+  Cookie,
+  SlidersHorizontal,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { openCookieSettings } from "@/components/CookieConsentBanner";
 
@@ -26,13 +44,17 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
                 {isAr ? "سياسة الخصوصية وحماية البيانات" : "Privacy & Data Protection Policy"}
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                {isAr ? "آخر تحديث: أغسطس 2026 — متجر تين ليوا (الإمارات العربية المتحدة)" : "Last updated: August 2026 — Teen Liwa Store (UAE)"}
+                {isAr
+                  ? "آخر تحديث: أغسطس 2026 — متجر تين ليوا (الإمارات العربية المتحدة)"
+                  : "Last updated: August 2026 — Teen Liwa Store (UAE)"}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className={`space-y-6 my-3 text-sm leading-relaxed ${isAr ? "text-right" : "text-left"}`}>
+        <div
+          className={`space-y-6 my-3 text-sm leading-relaxed ${isAr ? "text-right" : "text-left"}`}
+        >
           {/* Summary Box */}
           <div className="rounded-2xl bg-secondary/50 border border-border/60 p-4 space-y-2">
             <h4 className="font-bold text-foreground flex items-center gap-2 text-xs uppercase tracking-wider text-primary">
@@ -61,22 +83,34 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-foreground">{isAr ? "بيانات التواصل والتوصيل:" : "Contact & Delivery Details:"}</strong>{" "}
-                  {isAr ? "الاسم، رقم الهاتف، عنوان التوصيل التفصيلي والإمارة." : "Full name, phone number, detailed delivery address, and Emirate."}
+                  <strong className="text-foreground">
+                    {isAr ? "بيانات التواصل والتوصيل:" : "Contact & Delivery Details:"}
+                  </strong>{" "}
+                  {isAr
+                    ? "الاسم، رقم الهاتف، عنوان التوصيل التفصيلي والإمارة."
+                    : "Full name, phone number, detailed delivery address, and Emirate."}
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-foreground">{isAr ? "تفاصيل الطلب:" : "Order Details:"}</strong>{" "}
-                  {isAr ? "المنتجات المختارة، الكميات، وتاريخ ووقت الطلب." : "Selected items, quantities, and order timestamps."}
+                  <strong className="text-foreground">
+                    {isAr ? "تفاصيل الطلب:" : "Order Details:"}
+                  </strong>{" "}
+                  {isAr
+                    ? "المنتجات المختارة، الكميات، وتاريخ ووقت الطلب."
+                    : "Selected items, quantities, and order timestamps."}
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-foreground">{isAr ? "التقييمات والبريد الإلكتروني:" : "Reviews & Email:"}</strong>{" "}
-                  {isAr ? "التقييمات والتعليقات والبريد الإلكتروني الذي تدخله اختيارياً عند تقييم المنتجات." : "Optional product reviews, comments, and email entered voluntarily."}
+                  <strong className="text-foreground">
+                    {isAr ? "التقييمات والبريد الإلكتروني:" : "Reviews & Email:"}
+                  </strong>{" "}
+                  {isAr
+                    ? "التقييمات والتعليقات والبريد الإلكتروني الذي تدخله اختيارياً عند تقييم المنتجات."
+                    : "Optional product reviews, comments, and email entered voluntarily."}
                 </span>
               </li>
             </ul>
@@ -113,7 +147,9 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
                 <Cookie className="h-4 w-4 text-amber-400 shrink-0" />
-                {isAr ? "4. ملفات تعريف الارتباط وبكسل التتبع (Cookies)" : "4. Cookies & Tracking Pixels"}
+                {isAr
+                  ? "4. ملفات تعريف الارتباط وبكسل التتبع (Cookies)"
+                  : "4. Cookies & Tracking Pixels"}
               </h3>
               <button
                 type="button"
@@ -148,7 +184,11 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
             <div className="flex flex-wrap gap-3 pt-2 text-xs font-semibold text-foreground">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary border border-border/50">
                 <Phone className="h-3.5 w-3.5 text-primary" />
-                <span>{isAr ? "خدمة العملاء والواتساب: متوفر على مدار الساعة" : "WhatsApp Customer Support: 24/7"}</span>
+                <span>
+                  {isAr
+                    ? "خدمة العملاء والواتساب: متوفر على مدار الساعة"
+                    : "WhatsApp Customer Support: 24/7"}
+                </span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary border border-border/50">
                 <Mail className="h-3.5 w-3.5 text-primary" />

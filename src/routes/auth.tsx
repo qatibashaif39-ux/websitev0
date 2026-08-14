@@ -6,10 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
-    meta: [
-      { title: "تسجيل الدخول — لوحة التحكم" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "تسجيل الدخول — لوحة التحكم" }, { name: "robots", content: "noindex" }],
   }),
   component: AuthPage,
 });
@@ -120,11 +117,13 @@ function AuthPage() {
           {mode === "login" ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب؟ تسجيل الدخول"}
         </button>
 
-        <Link to="/" className="mt-3 block text-center text-xs text-muted-foreground hover:text-foreground">
+        <Link
+          to="/"
+          className="mt-3 block text-center text-xs text-muted-foreground hover:text-foreground"
+        >
           العودة للمتجر
         </Link>
       </div>
     </main>
   );
 }
-

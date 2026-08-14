@@ -38,7 +38,8 @@ function DashboardOrders() {
     const term = q.trim().toUpperCase();
     return all.filter((o: Order) => {
       if (filter !== "all" && o.status !== filter) return false;
-      if (term && !o.tracking.toUpperCase().includes(term) && !o.name.toUpperCase().includes(term)) return false;
+      if (term && !o.tracking.toUpperCase().includes(term) && !o.name.toUpperCase().includes(term))
+        return false;
       return true;
     });
   }, [all, filter, q]);
@@ -61,7 +62,9 @@ function DashboardOrders() {
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
-              filter === f.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
+              filter === f.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
             }`}
           >
             {f.label}
@@ -70,7 +73,9 @@ function DashboardOrders() {
       </div>
 
       {isLoading ? (
-        <div className="mt-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+        <div className="mt-10 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       ) : filtered.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-border/60 bg-card p-8 text-center text-sm text-muted-foreground">
           لا توجد طلبات مطابقة.
@@ -92,8 +97,12 @@ function DashboardOrders() {
               </div>
               <div className="flex items-center gap-2 text-left">
                 <div>
-                  <div className="font-semibold">{o.total.toFixed(2)} {CURRENCY}</div>
-                  <div className={`mt-1 text-xs font-bold ${isCancelled(o.status) ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div className="font-semibold">
+                    {o.total.toFixed(2)} {CURRENCY}
+                  </div>
+                  <div
+                    className={`mt-1 text-xs font-bold ${isCancelled(o.status) ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {statusLabel(o)}
                   </div>
                 </div>

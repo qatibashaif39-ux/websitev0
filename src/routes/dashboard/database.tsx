@@ -119,25 +119,48 @@ const D1_TABLES: TableDef[] = [
 ];
 
 const SAMPLE_QUERIES = [
-  { label: "أحدث الطلبات", sql: "SELECT tracking, name, total, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5;" },
-  { label: "إحصائيات المنتجات", sql: "SELECT category_id, COUNT(*) as total_items, AVG(price) as avg_price FROM products GROUP BY category_id;" },
+  {
+    label: "أحدث الطلبات",
+    sql: "SELECT tracking, name, total, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5;",
+  },
+  {
+    label: "إحصائيات المنتجات",
+    sql: "SELECT category_id, COUNT(*) as total_items, AVG(price) as avg_price FROM products GROUP BY category_id;",
+  },
   { label: "فحص بنية جدول الطلبات", sql: "PRAGMA table_info(orders);" },
-  { label: "الطلبات المعلقة", sql: "SELECT tracking, name, phone, total FROM orders WHERE status = 'pending';" },
+  {
+    label: "الطلبات المعلقة",
+    sql: "SELECT tracking, name, phone, total FROM orders WHERE status = 'pending';",
+  },
 ];
 
 function DashboardDatabasePage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "schema" | "console" | "wrangler">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "schema" | "console" | "wrangler">(
+    "overview",
+  );
   const [selectedTable, setSelectedTable] = useState<string>("orders");
   const [tableSearch, setTableSearch] = useState("");
-  const [sqlQuery, setSqlQuery] = useState("SELECT tracking, name, phone, total, status FROM orders LIMIT 10;");
-  const [queryResult, setQueryResult] = useState<{ columns: string[]; rows: any[]; timeMs: number } | null>(null);
+  const [sqlQuery, setSqlQuery] = useState(
+    "SELECT tracking, name, phone, total, status FROM orders LIMIT 10;",
+  );
+  const [queryResult, setQueryResult] = useState<{
+    columns: string[];
+    rows: any[];
+    timeMs: number;
+  } | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [copiedWrangler, setCopiedWrangler] = useState(false);
 
   // Load real data for table inspection
   const { data: orders = [] } = useQuery({ queryKey: ["orders", "all"], queryFn: getAllOrders });
-  const { data: products = [] } = useQuery({ queryKey: ["products", "all"], queryFn: fetchProducts });
-  const { data: categories = [] } = useQuery({ queryKey: ["categories", "all"], queryFn: fetchCategories });
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: fetchProducts,
+  });
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories", "all"],
+    queryFn: fetchCategories,
+  });
 
   const wranglerConfig = `// wrangler.jsonc or wrangler.toml for Cloudflare D1
 {
@@ -213,7 +236,7 @@ function DashboardDatabasePage() {
     if (!tableSearch.trim()) return currentTableRows;
     const q = tableSearch.toLowerCase();
     return currentTableRows.filter((r) =>
-      Object.values(r).some((v) => String(v).toLowerCase().includes(q))
+      Object.values(r).some((v) => String(v).toLowerCase().includes(q)),
     );
   }, [currentTableRows, tableSearch]);
 
@@ -228,13 +251,22 @@ function DashboardDatabasePage() {
 
       if (q.includes("orders")) {
         cols = ["tracking", "name", "phone", "total", "status"];
-        rows = orders.slice(0, 10).map((o) => [o.tracking, o.name, o.phone, `${o.total} AED`, o.status]);
+        rows = orders
+          .slice(0, 10)
+          .map((o) => [o.tracking, o.name, o.phone, `${o.total} AED`, o.status]);
       } else if (q.includes("products")) {
         cols = ["id", "name", "price", "category"];
         rows = products.slice(0, 10).map((p) => [p.id, p.name, `${p.price} AED`, p.category]);
       } else if (q.includes("pragma")) {
         cols = ["cid", "name", "type", "notnull", "dflt_value", "pk"];
-        rows = currentTableDef.columns.map((c, i) => [i, c.name, c.type, c.nullable ? 0 : 1, "NULL", c.pk ? 1 : 0]);
+        rows = currentTableDef.columns.map((c, i) => [
+          i,
+          c.name,
+          c.type,
+          c.nullable ? 0 : 1,
+          "NULL",
+          c.pk ? 1 : 0,
+        ]);
       } else {
         cols = ["result", "message"];
         rows = [["SUCCESS", "تم تنفيذ الاستعلام بنجاح في قاعدة بيانات Cloudflare D1"]];
@@ -359,7 +391,9 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
             <span className="text-xs text-muted-foreground font-semibold">إجمالي السجلات</span>
             <HardDrive className="h-4 w-4 text-primary" />
           </div>
-          <div className="mt-2 text-xl font-extrabold">{orders.length + products.length + categories.length + 3} سجلات</div>
+          <div className="mt-2 text-xl font-extrabold">
+            {orders.length + products.length + categories.length + 3} سجلات
+          </div>
           <div className="mt-1 text-xs text-emerald-400 font-medium">مزامنة فورية</div>
         </div>
       </div>
@@ -433,16 +467,26 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
 
             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-border/80 bg-background/50 p-4 space-y-3">
-                <div className="text-xs font-semibold text-muted-foreground">اسم الربط الرئيسي Binding Name</div>
+                <div className="text-xs font-semibold text-muted-foreground">
+                  اسم الربط الرئيسي Binding Name
+                </div>
                 <div className="font-mono text-sm font-bold text-primary">env.DB</div>
                 <p className="text-xs text-muted-foreground">
-                  يمكن الوصول إلى محرك الاستعلامات مباشرة عبر <code className="rounded bg-secondary px-1.5 py-0.5 text-foreground font-mono">env.DB.prepare(...)</code> في بيئة Cloudflare Workers / Pages.
+                  يمكن الوصول إلى محرك الاستعلامات مباشرة عبر{" "}
+                  <code className="rounded bg-secondary px-1.5 py-0.5 text-foreground font-mono">
+                    env.DB.prepare(...)
+                  </code>{" "}
+                  في بيئة Cloudflare Workers / Pages.
                 </p>
               </div>
 
               <div className="rounded-xl border border-border/80 bg-background/50 p-4 space-y-3">
-                <div className="text-xs font-semibold text-muted-foreground">معرّف قاعدة البيانات Database ID</div>
-                <div className="font-mono text-sm font-bold text-foreground">8f3b12a9-d102-4bc6-a9f8-82019a3efd20</div>
+                <div className="text-xs font-semibold text-muted-foreground">
+                  معرّف قاعدة البيانات Database ID
+                </div>
+                <div className="font-mono text-sm font-bold text-foreground">
+                  8f3b12a9-d102-4bc6-a9f8-82019a3efd20
+                </div>
                 <p className="text-xs text-muted-foreground">
                   المعرف الفريد المخصص لـ EZ-Checkout Liwa D1 Instance.
                 </p>
@@ -473,7 +517,9 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
                 <p className="mt-2 text-xs text-muted-foreground">{t.description}</p>
                 <div className="mt-4 flex items-center justify-between text-xs text-primary font-bold">
                   <span>استعراض البيانات ←</span>
-                  <span className="font-mono text-muted-foreground">Primary Key: {t.columns.find((c) => c.pk)?.name}</span>
+                  <span className="font-mono text-muted-foreground">
+                    Primary Key: {t.columns.find((c) => c.pk)?.name}
+                  </span>
                 </div>
               </div>
             ))}
@@ -519,14 +565,22 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
           <div className="rounded-2xl border border-border/60 bg-card p-5">
             <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
               <Code2 className="h-4 w-4 text-primary" />
-              بنية جدول <code className="text-primary font-mono">{currentTableDef.name}</code> ({currentTableDef.description})
+              بنية جدول <code className="text-primary font-mono">{currentTableDef.name}</code> (
+              {currentTableDef.description})
             </h3>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {currentTableDef.columns.map((c) => (
-                <div key={c.name} className="rounded-xl border border-border/60 bg-background/60 p-2.5">
+                <div
+                  key={c.name}
+                  className="rounded-xl border border-border/60 bg-background/60 p-2.5"
+                >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs font-bold text-foreground">{c.name}</span>
-                    {c.pk && <span className="rounded bg-primary/20 px-1 py-0.5 text-[10px] font-bold text-primary">PK</span>}
+                    {c.pk && (
+                      <span className="rounded bg-primary/20 px-1 py-0.5 text-[10px] font-bold text-primary">
+                        PK
+                      </span>
+                    )}
                   </div>
                   <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
                     <span className="font-mono text-primary/80">{c.type}</span>
@@ -552,7 +606,9 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
             </div>
 
             {filteredRows.length === 0 ? (
-              <div className="p-8 text-center text-xs text-muted-foreground">لا توجد سجلات مطابقة للبحث.</div>
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                لا توجد سجلات مطابقة للبحث.
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-right text-xs">
@@ -569,7 +625,10 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
                     {filteredRows.map((row, idx) => (
                       <tr key={idx} className="hover:bg-secondary/30 transition-colors">
                         {Object.values(row).map((val, cIdx) => (
-                          <td key={cIdx} className="px-4 py-3 font-mono text-foreground whitespace-nowrap">
+                          <td
+                            key={cIdx}
+                            className="px-4 py-3 font-mono text-foreground whitespace-nowrap"
+                          >
                             {String(val)}
                           </td>
                         ))}
@@ -597,14 +656,20 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
                 disabled={isExecuting || !sqlQuery.trim()}
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
-                {isExecuting ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+                {isExecuting ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                )}
                 تشغيل الاستعلام (Run SQL)
               </button>
             </div>
 
             {/* Quick Sample Queries */}
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="text-xs font-bold text-muted-foreground self-center">استعلامات سريعة:</span>
+              <span className="text-xs font-bold text-muted-foreground self-center">
+                استعلامات سريعة:
+              </span>
               {SAMPLE_QUERIES.map((sq, i) => (
                 <button
                   key={i}
@@ -683,7 +748,11 @@ ${products.map((p) => `INSERT INTO products VALUES ('${p.id}', '${p.name.replace
                 onClick={handleCopyWrangler}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2 text-xs font-bold hover:bg-secondary"
               >
-                {copiedWrangler ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-primary" />}
+                {copiedWrangler ? (
+                  <Check className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <Copy className="h-4 w-4 text-primary" />
+                )}
                 {copiedWrangler ? "تم النسخ" : "نسخ الملف"}
               </button>
             </div>

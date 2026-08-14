@@ -1,7 +1,0 @@
-project_id = "broeqkpkbtxdtrvdbqkh"
-
-[functions.create-ziina-payment]
-verify_jwt = false
-
-[functions.ziina-webhook]
-verify_jwt = false

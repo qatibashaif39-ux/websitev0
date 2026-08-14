@@ -1,6 +1,21 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Cookie, ShieldCheck, Lock, BarChart3, Target, CheckCircle2, SlidersHorizontal, Info } from "lucide-react";
+import {
+  Cookie,
+  ShieldCheck,
+  Lock,
+  BarChart3,
+  Target,
+  CheckCircle2,
+  SlidersHorizontal,
+  Info,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CookiePolicyModalProps {
@@ -22,21 +37,29 @@ export function CookiePolicyModal({ isOpen, onClose }: CookiePolicyModalProps) {
             </div>
             <div>
               <DialogTitle className="text-xl font-extrabold text-foreground">
-                {isAr ? "اتفاقية ملفات تعريف الارتباط وتقنيات التتبع" : "Cookie & Tracking Technologies Agreement"}
+                {isAr
+                  ? "اتفاقية ملفات تعريف الارتباط وتقنيات التتبع"
+                  : "Cookie & Tracking Technologies Agreement"}
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                {isAr ? "متجر تين ليوا — دولة الإمارات العربية المتحدة" : "Teen Liwa Store — United Arab Emirates"}
+                {isAr
+                  ? "متجر تين ليوا — دولة الإمارات العربية المتحدة"
+                  : "Teen Liwa Store — United Arab Emirates"}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className={`space-y-5 my-3 text-sm leading-relaxed ${isAr ? "text-right" : "text-left"}`}>
+        <div
+          className={`space-y-5 my-3 text-sm leading-relaxed ${isAr ? "text-right" : "text-left"}`}
+        >
           {/* Overview */}
           <div className="rounded-2xl bg-secondary/40 border border-border/60 p-4 space-y-2">
             <h4 className="font-bold text-foreground flex items-center gap-2 text-xs uppercase tracking-wider text-primary">
               <Info className="h-4 w-4" />
-              {isAr ? "ما هي ملفات تعريف الارتباط (Cookies) وكيف نستخدمها؟" : "What are cookies and how do we use them?"}
+              {isAr
+                ? "ما هي ملفات تعريف الارتباط (Cookies) وكيف نستخدمها؟"
+                : "What are cookies and how do we use them?"}
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {isAr
@@ -49,7 +72,9 @@ export function CookiePolicyModal({ isOpen, onClose }: CookiePolicyModalProps) {
           <div className="space-y-3">
             <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4 text-primary" />
-              {isAr ? "فئات وأنواع ملفات تعريف الارتباط المستخدمة:" : "Categories of Cookies We Use:"}
+              {isAr
+                ? "فئات وأنواع ملفات تعريف الارتباط المستخدمة:"
+                : "Categories of Cookies We Use:"}
             </h3>
 
             {/* 1. Essential */}
@@ -57,7 +82,9 @@ export function CookiePolicyModal({ isOpen, onClose }: CookiePolicyModalProps) {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-xs text-foreground flex items-center gap-2">
                   <Lock className="h-4 w-4 text-primary" />
-                  {isAr ? "1. ملفات تعريف الارتباط الضرورية جداً (Strictly Necessary)" : "1. Strictly Necessary Cookies"}
+                  {isAr
+                    ? "1. ملفات تعريف الارتباط الضرورية جداً (Strictly Necessary)"
+                    : "1. Strictly Necessary Cookies"}
                 </span>
                 <span className="text-[10px] font-bold bg-primary/20 text-primary px-2.5 py-0.5 rounded-full">
                   {isAr ? "إلزامية" : "Mandatory"}
@@ -75,7 +102,9 @@ export function CookiePolicyModal({ isOpen, onClose }: CookiePolicyModalProps) {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-xs text-foreground flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-emerald-400" />
-                  {isAr ? "2. ملفات الأداء والتحليلات (Performance & Analytics)" : "2. Performance & Analytics"}
+                  {isAr
+                    ? "2. ملفات الأداء والتحليلات (Performance & Analytics)"
+                    : "2. Performance & Analytics"}
                 </span>
                 <span className="text-[10px] font-bold bg-secondary text-muted-foreground px-2.5 py-0.5 rounded-full">
                   {isAr ? "اختيارية" : "Optional"}
@@ -93,7 +122,9 @@ export function CookiePolicyModal({ isOpen, onClose }: CookiePolicyModalProps) {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-xs text-foreground flex items-center gap-2">
                   <Target className="h-4 w-4 text-amber-400" />
-                  {isAr ? "3. بكسل التتبع والإعلانات (Marketing & Ad Pixels)" : "3. Tracking Pixels & Marketing"}
+                  {isAr
+                    ? "3. بكسل التتبع والإعلانات (Marketing & Ad Pixels)"
+                    : "3. Tracking Pixels & Marketing"}
                 </span>
                 <span className="text-[10px] font-bold bg-secondary text-muted-foreground px-2.5 py-0.5 rounded-full">
                   {isAr ? "اختيارية" : "Optional"}

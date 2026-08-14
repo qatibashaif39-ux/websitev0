@@ -1,1 +1,0 @@
-CREATE POLICY "Anyone can view guest orders" ON public.orders FOR SELECT TO anon USING (customer_user_id IS NULL);

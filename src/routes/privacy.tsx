@@ -1,5 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Lock, Eye, Truck, CreditCard, BellRing, Phone, Mail, ArrowRight, ArrowLeft, CheckCircle2, Cookie, SlidersHorizontal } from "lucide-react";
+import {
+  ShieldCheck,
+  Lock,
+  Eye,
+  Truck,
+  CreditCard,
+  BellRing,
+  Phone,
+  Mail,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Cookie,
+  SlidersHorizontal,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { openCookieSettings } from "@/components/CookieConsentBanner";
@@ -8,15 +22,20 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "سياسة الخصوصية وحماية البيانات — تين ليوا" },
-      { name: "description", content: "سياسة الخصوصية وحماية البيانات في متجر تين ليوا. التزامنا بأمان وسرية بيانات عملائنا في دولة الإمارات العربية المتحدة." },
+      {
+        name: "description",
+        content:
+          "سياسة الخصوصية وحماية البيانات في متجر تين ليوا. التزامنا بأمان وسرية بيانات عملائنا في دولة الإمارات العربية المتحدة.",
+      },
       { name: "robots", content: "index, follow" },
       { property: "og:title", content: "سياسة الخصوصية — تين ليوا" },
-      { property: "og:description", content: "تعرف على سياسات الخصوصية وحماية البيانات وملفات الارتباط لمتجر تين ليوا." },
+      {
+        property: "og:description",
+        content: "تعرف على سياسات الخصوصية وحماية البيانات وملفات الارتباط لمتجر تين ليوا.",
+      },
       { property: "og:url", content: "https://teenliwa.com/privacy" },
     ],
-    links: [
-      { rel: "canonical", href: "https://teenliwa.com/privacy" },
-    ],
+    links: [{ rel: "canonical", href: "https://teenliwa.com/privacy" }],
   }),
   component: PrivacyPage,
 });
@@ -65,25 +84,37 @@ function PrivacyPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-5 rounded-2xl bg-card border border-border/60 space-y-2 text-right">
             <Lock className="h-5 w-5 text-primary" />
-            <h3 className="font-bold text-sm text-foreground">{isAr ? "تشفير وأمان كامل" : "Full TLS Encryption"}</h3>
+            <h3 className="font-bold text-sm text-foreground">
+              {isAr ? "تشفير وأمان كامل" : "Full TLS Encryption"}
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {isAr ? "جميع الاتصالات والمعاملات مشفرة ومؤمنة بأحدث بروتوكولات الحماية." : "All connections and sessions are secured with top-tier TLS/SSL encryption."}
+              {isAr
+                ? "جميع الاتصالات والمعاملات مشفرة ومؤمنة بأحدث بروتوكولات الحماية."
+                : "All connections and sessions are secured with top-tier TLS/SSL encryption."}
             </p>
           </div>
 
           <div className="p-5 rounded-2xl bg-card border border-border/60 space-y-2 text-right">
             <CreditCard className="h-5 w-5 text-emerald-400" />
-            <h3 className="font-bold text-sm text-foreground">{isAr ? "دفع آمن 100%" : "Secure Payments"}</h3>
+            <h3 className="font-bold text-sm text-foreground">
+              {isAr ? "دفع آمن 100%" : "Secure Payments"}
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {isAr ? "معالجة المدفوعات عبر بوابات مرخصة (Ziina) ولا يتم تخزين البطاقات لدينا." : "Card processing via licensed Ziina gateway; no card numbers stored on our servers."}
+              {isAr
+                ? "معالجة المدفوعات عبر بوابات مرخصة (Ziina) ولا يتم تخزين البطاقات لدينا."
+                : "Card processing via licensed Ziina gateway; no card numbers stored on our servers."}
             </p>
           </div>
 
           <div className="p-5 rounded-2xl bg-card border border-border/60 space-y-2 text-right">
             <Truck className="h-5 w-5 text-amber-400" />
-            <h3 className="font-bold text-sm text-foreground">{isAr ? "توصيل طازج وموثوق" : "Reliable Same-Day Delivery"}</h3>
+            <h3 className="font-bold text-sm text-foreground">
+              {isAr ? "توصيل طازج وموثوق" : "Reliable Same-Day Delivery"}
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {isAr ? "توصيل مباشر في نفس اليوم داخل الإمارات وسرية تامة لعنوانك." : "Fast same-day delivery with complete confidentiality of customer addresses."}
+              {isAr
+                ? "توصيل مباشر في نفس اليوم داخل الإمارات وسرية تامة لعنوانك."
+                : "Fast same-day delivery with complete confidentiality of customer addresses."}
             </p>
           </div>
         </div>
@@ -93,7 +124,9 @@ function PrivacyPage() {
           {/* 1. Data Collection */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border/60 space-y-4">
             <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">1</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">
+                1
+              </span>
               {isAr ? "البيانات التي نقوم بجمعها" : "1. Information We Collect"}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -108,7 +141,9 @@ function PrivacyPage() {
                   {isAr ? "بيانات العميل والتوصيل" : "Customer Contact & Delivery"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {isAr ? "الاسم الأول واسم العائلة، رقم الهاتف الإماراتي، الإمارة، والعنوان التفصيلي." : "First and last name, UAE phone number, Emirate, and specific delivery address."}
+                  {isAr
+                    ? "الاسم الأول واسم العائلة، رقم الهاتف الإماراتي، الإمارة، والعنوان التفصيلي."
+                    : "First and last name, UAE phone number, Emirate, and specific delivery address."}
                 </p>
               </div>
 
@@ -118,7 +153,9 @@ function PrivacyPage() {
                   {isAr ? "بيانات الطلب والشحنة" : "Order & Shipment Records"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {isAr ? "رمز التتبع الفريد، سلة المنتجات المشتراة، الكميات، وإجمالي الفاتورة." : "Unique tracking code, purchased items, quantities, and total order invoice."}
+                  {isAr
+                    ? "رمز التتبع الفريد، سلة المنتجات المشتراة، الكميات، وإجمالي الفاتورة."
+                    : "Unique tracking code, purchased items, quantities, and total order invoice."}
                 </p>
               </div>
 
@@ -128,7 +165,9 @@ function PrivacyPage() {
                   {isAr ? "التقييمات والتعليقات" : "Reviews & Ratings"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {isAr ? "الآراء والتقييمات والبريد الإلكتروني الذي تدخله طواعية لتقييم المنتجات." : "Product feedback, ratings, and optional email submitted when reviewing items."}
+                  {isAr
+                    ? "الآراء والتقييمات والبريد الإلكتروني الذي تدخله طواعية لتقييم المنتجات."
+                    : "Product feedback, ratings, and optional email submitted when reviewing items."}
                 </p>
               </div>
 
@@ -138,7 +177,9 @@ function PrivacyPage() {
                   {isAr ? "بيانات الجلسة والتفضيلات" : "Session & Preferences"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {isAr ? "حفظ عناصر السلة وتفضيل اللغة (عربي / إنجليزي) على متصفحك محلياً." : "Cart persistence and chosen language preference stored locally in your browser."}
+                  {isAr
+                    ? "حفظ عناصر السلة وتفضيل اللغة (عربي / إنجليزي) على متصفحك محلياً."
+                    : "Cart persistence and chosen language preference stored locally in your browser."}
                 </p>
               </div>
             </div>
@@ -147,7 +188,9 @@ function PrivacyPage() {
           {/* 2. Payment Security */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border/60 space-y-4">
             <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">2</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">
+                2
+              </span>
               {isAr ? "أمان العمليات المالية والمدفوعات" : "2. Payment Security & Financial Data"}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -160,7 +203,9 @@ function PrivacyPage() {
           {/* 3. Delivery & Third Parties */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border/60 space-y-4">
             <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">3</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">
+                3
+              </span>
               {isAr ? "مشاركة البيانات والتوصيل" : "3. Delivery Logistics & Third Parties"}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -174,8 +219,12 @@ function PrivacyPage() {
           <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border/60 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">4</span>
-                {isAr ? "اتفاقية ملفات تعريف الارتباط وتقنيات التتبع (Cookies)" : "4. Cookies & Tracking Technologies"}
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">
+                  4
+                </span>
+                {isAr
+                  ? "اتفاقية ملفات تعريف الارتباط وتقنيات التتبع (Cookies)"
+                  : "4. Cookies & Tracking Technologies"}
               </h2>
               <Button
                 type="button"
@@ -199,7 +248,9 @@ function PrivacyPage() {
                   {isAr ? "الملفات الضرورية" : "Essential Cookies"}
                 </div>
                 <p className="text-muted-foreground">
-                  {isAr ? "لحفظ سلة المشتريات وجلسة الأمان واللغة (دائماً مفعلة)." : "Maintains cart items, security session, and language preference."}
+                  {isAr
+                    ? "لحفظ سلة المشتريات وجلسة الأمان واللغة (دائماً مفعلة)."
+                    : "Maintains cart items, security session, and language preference."}
                 </p>
               </div>
 
@@ -209,7 +260,9 @@ function PrivacyPage() {
                   {isAr ? "التحليلات والأداء" : "Performance & Analytics"}
                 </div>
                 <p className="text-muted-foreground">
-                  {isAr ? "لقياس سرعة التصفح وتطوير واجهة المتجر دون التعرف على الهوية الشخصية." : "Measures browsing responsiveness without personal identification."}
+                  {isAr
+                    ? "لقياس سرعة التصفح وتطوير واجهة المتجر دون التعرف على الهوية الشخصية."
+                    : "Measures browsing responsiveness without personal identification."}
                 </p>
               </div>
 
@@ -219,7 +272,9 @@ function PrivacyPage() {
                   {isAr ? "بكسل ميتا وتيك توك" : "Marketing Pixels"}
                 </div>
                 <p className="text-muted-foreground">
-                  {isAr ? "لتخصيص عروض الخصومات وتعمل فقط بناءً على موافقتك الصريحة." : "Personalizes seasonal promotions and only runs upon explicit consent."}
+                  {isAr
+                    ? "لتخصيص عروض الخصومات وتعمل فقط بناءً على موافقتك الصريحة."
+                    : "Personalizes seasonal promotions and only runs upon explicit consent."}
                 </p>
               </div>
             </div>
@@ -228,7 +283,9 @@ function PrivacyPage() {
           {/* 5. Customer Rights & Inquiries */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border/60 space-y-4">
             <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">5</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-primary font-black text-sm">
+                5
+              </span>
               {isAr ? "حقوقك والتواصل مع مسؤول الخصوصية" : "5. Your Rights & Privacy Inquiries"}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

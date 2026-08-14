@@ -54,7 +54,9 @@ function DashboardOverview() {
   const stats = useMemo(() => {
     const active = orders.filter((o: Order) => !isCancelled(o.status));
     const revenue = active.reduce((s: number, o: Order) => s + o.total, 0);
-    const pending = orders.filter((o: Order) => o.status === "pending" || o.status === "processing").length;
+    const pending = orders.filter(
+      (o: Order) => o.status === "pending" || o.status === "processing",
+    ).length;
     const delivered = orders.filter((o: Order) => o.status === "delivered").length;
     const conversion = orders.length ? Math.round((delivered / orders.length) * 100) : 0;
     return { total: orders.length, revenue, pending, conversion };
@@ -70,7 +72,10 @@ function DashboardOverview() {
       const revenue = orders
         .filter((o: Order) => !isCancelled(o.status) && o.createdAt >= start && o.createdAt < end)
         .reduce((s: number, o: Order) => s + o.total, 0);
-      days.push({ label: d.toLocaleDateString("ar", { day: "numeric", month: "numeric" }), revenue });
+      days.push({
+        label: d.toLocaleDateString("ar", { day: "numeric", month: "numeric" }),
+        revenue,
+      });
     }
     return days;
   }, [orders, period]);
@@ -98,7 +103,11 @@ function DashboardOverview() {
   const hasOrders = orders.length > 0;
 
   if (isLoading) {
-    return <div className="flex min-h-[40vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
@@ -137,11 +146,26 @@ function DashboardOverview() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0 0)" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "oklch(0.6 0 0)" }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "oklch(0.6 0 0)" }} tickLine={false} axisLine={false} width={40} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 11, fill: "oklch(0.6 0 0)" }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "oklch(0.6 0 0)" }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={40}
+                  />
                   <Tooltip
                     cursor={{ fill: "oklch(0.3 0 0 / 0.3)" }}
-                    contentStyle={{ background: "oklch(0.2 0 0)", border: "1px solid oklch(0.35 0 0)", borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{
+                      background: "oklch(0.2 0 0)",
+                      border: "1px solid oklch(0.35 0 0)",
+                      borderRadius: 12,
+                      fontSize: 12,
+                    }}
                     formatter={(v: number) => [`${v} ${CURRENCY}`, "الإيرادات"]}
                   />
                   <Bar dataKey="revenue" fill="oklch(0.72 0.17 150)" radius={[6, 6, 0, 0]} />
@@ -159,12 +183,26 @@ function DashboardOverview() {
             {hasOrders ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                  <Pie
+                    data={statusData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={50}
+                    outerRadius={85}
+                    paddingAngle={2}
+                  >
                     {statusData.map((entry) => (
                       <Cell key={entry.key} fill={STATUS_COLORS[entry.key] ?? "oklch(0.6 0 0)"} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "oklch(0.2 0 0)", border: "1px solid oklch(0.35 0 0)", borderRadius: 12, fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "oklch(0.2 0 0)",
+                      border: "1px solid oklch(0.35 0 0)",
+                      borderRadius: 12,
+                      fontSize: 12,
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -174,7 +212,10 @@ function DashboardOverview() {
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
             {statusData.map((s) => (
               <div key={s.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_COLORS[s.key] }} />
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ background: STATUS_COLORS[s.key] }}
+                />
                 {s.name} ({s.value})
               </div>
             ))}
@@ -184,7 +225,9 @@ function DashboardOverview() {
 
       <div className="mt-8 flex items-center justify-between">
         <h2 className="text-lg font-bold">أحدث الطلبات</h2>
-        <Link to="/dashboard/orders" className="text-sm font-semibold text-primary hover:underline">عرض الكل</Link>
+        <Link to="/dashboard/orders" className="text-sm font-semibold text-primary hover:underline">
+          عرض الكل
+        </Link>
       </div>
 
       {recent.length === 0 ? (
@@ -206,8 +249,12 @@ function DashboardOverview() {
               </div>
               <div className="flex items-center gap-2 text-left">
                 <div>
-                  <div className="font-semibold">{o.total.toFixed(2)} {CURRENCY}</div>
-                  <div className={`mt-1 text-xs font-bold ${isCancelled(o.status) ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div className="font-semibold">
+                    {o.total.toFixed(2)} {CURRENCY}
+                  </div>
+                  <div
+                    className={`mt-1 text-xs font-bold ${isCancelled(o.status) ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {statusLabel(o)}
                   </div>
                 </div>
@@ -222,5 +269,9 @@ function DashboardOverview() {
 }
 
 function EmptyChart() {
-  return <div className="flex h-full items-center justify-center text-sm text-muted-foreground">لا توجد بيانات كافية بعد.</div>;
+  return (
+    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+      لا توجد بيانات كافية بعد.
+    </div>
+  );
 }

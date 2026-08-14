@@ -41,7 +41,9 @@ export function getD1Customers(): D1Customer[] {
 export function saveD1CustomerLocally(customer: D1Customer) {
   if (typeof window === "undefined") return;
   const list = getD1Customers();
-  const index = list.findIndex((c) => c.phone === customer.phone || (c.fname === customer.fname && c.lname === customer.lname));
+  const index = list.findIndex(
+    (c) => c.phone === customer.phone || (c.fname === customer.fname && c.lname === customer.lname),
+  );
   if (index >= 0) {
     const existing = list[index];
     list[index] = {
@@ -63,7 +65,8 @@ export function saveD1CustomerLocally(customer: D1Customer) {
 export function getCloudflareD1Config() {
   const accountId = import.meta.env.VITE_CLOUDFLARE_ACCOUNT_ID || "";
   const databaseId = import.meta.env.VITE_CLOUDFLARE_DATABASE_ID || "";
-  const globalApiKey = import.meta.env.VITE_CLOUDFLARE_GLOBAL_API_KEY || import.meta.env.VITE_CLOUDFLARE_API_KEY || "";
+  const globalApiKey =
+    import.meta.env.VITE_CLOUDFLARE_GLOBAL_API_KEY || import.meta.env.VITE_CLOUDFLARE_API_KEY || "";
   const apiToken = import.meta.env.VITE_CLOUDFLARE_API_TOKEN || "";
   const email = import.meta.env.VITE_CLOUDFLARE_EMAIL || "";
 
@@ -140,7 +143,17 @@ export const d1 = {
       `INSERT INTO customers (id, fname, lname, email, phone, address, emirate, total_orders, total_spent, last_order_tracking)
        VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
        ON CONFLICT(phone) DO UPDATE SET email=excluded.email, address=excluded.address, emirate=excluded.emirate, total_orders=total_orders+1, total_spent=total_spent+excluded.total_spent;`,
-      [customerRecord.id, fname, lname, email || "", phone, customerRecord.address, customerRecord.emirate, amount, input.tracking || ""]
+      [
+        customerRecord.id,
+        fname,
+        lname,
+        email || "",
+        phone,
+        customerRecord.address,
+        customerRecord.emirate,
+        amount,
+        input.tracking || "",
+      ],
     ).catch(() => {});
 
     return customerRecord;
@@ -216,12 +229,11 @@ export const d1 = {
       const addrClean = c.address.replace(/'/g, "''");
       sqlStatements.push(
         `INSERT INTO customers (id, fname, lname, phone, address, emirate, total_orders, total_spent, last_order_tracking, created_at) ` +
-        `VALUES ('${c.id}', '${fnameClean}', '${lnameClean}', '${c.phone}', '${addrClean}', '${c.emirate}', ${c.totalOrders}, ${c.totalSpent}, '${c.lastOrderTracking || ""}', '${c.created_at}') ` +
-        `ON CONFLICT(phone) DO UPDATE SET address=excluded.address, emirate=excluded.emirate, total_orders=total_orders+1, total_spent=total_spent+excluded.total_spent;`
+          `VALUES ('${c.id}', '${fnameClean}', '${lnameClean}', '${c.phone}', '${addrClean}', '${c.emirate}', ${c.totalOrders}, ${c.totalSpent}, '${c.lastOrderTracking || ""}', '${c.created_at}') ` +
+          `ON CONFLICT(phone) DO UPDATE SET address=excluded.address, emirate=excluded.emirate, total_orders=total_orders+1, total_spent=total_spent+excluded.total_spent;`,
       );
     });
 
     return sqlStatements.join("\n");
   },
 };
-

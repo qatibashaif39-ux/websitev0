@@ -88,7 +88,8 @@ function Index() {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
     name: "تين ليوا - Teen Liwa",
-    description: "متجر متخصص في التين الطبيعي الطازج والتمور والفواكه الفاخرة في دولة الإمارات العربية المتحدة.",
+    description:
+      "متجر متخصص في التين الطبيعي الطازج والتمور والفواكه الفاخرة في دولة الإمارات العربية المتحدة.",
     url: "https://teenliwa.ae",
     currenciesAccepted: "AED",
     paymentAccepted: "Credit Card, Apple Pay, Debit Card",
@@ -171,7 +172,10 @@ function Index() {
           </div>
         )}
 
-        <section id="about" className="mt-16 rounded-2xl border border-border/60 bg-card p-6 text-center">
+        <section
+          id="about"
+          className="mt-16 rounded-2xl border border-border/60 bg-card p-6 text-center"
+        >
           <h2 className="text-xl font-bold">{t("about.title")}</h2>
           <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">{t("about.body")}</p>
         </section>
@@ -194,4 +198,3 @@ function Index() {
     </main>
   );
 }
-

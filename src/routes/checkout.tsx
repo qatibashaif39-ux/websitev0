@@ -1,6 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Loader2, PhoneCall, Mail, User, MapPin, Receipt, ShieldCheck } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  PhoneCall,
+  Mail,
+  User,
+  MapPin,
+  Receipt,
+  ShieldCheck,
+} from "lucide-react";
 import { toast } from "sonner";
 import { CURRENCY } from "@/data/products";
 import { useCart } from "@/context/CartContext";
@@ -71,13 +80,16 @@ function Checkout() {
 
   const taxConfig = useMemo(() => getTaxConfig(), []);
   const deliveryFee = form.emirate ? EMIRATE_DELIVERY_FEE : 0;
-  
+
   const taxAmount = useMemo(() => {
     if (!taxConfig.enabled || taxConfig.rate <= 0) return 0;
     return Number(((total * taxConfig.rate) / 100).toFixed(2));
   }, [total, taxConfig]);
 
-  const grandTotal = useMemo(() => total + deliveryFee + taxAmount, [total, deliveryFee, taxAmount]);
+  const grandTotal = useMemo(
+    () => total + deliveryFee + taxAmount,
+    [total, deliveryFee, taxAmount],
+  );
   const totalQty = useMemo(() => items.reduce((s, i) => s + i.qty, 0), [items]);
   const [minQty, setMinQty] = useState(2);
 
@@ -175,7 +187,9 @@ function Checkout() {
 
     if (belowItems.length > 0) {
       const first = belowItems[0];
-      toast.error(`الحد الأدنى لـ "${first.product.name}" هو ${first.product.minimum_order_quantity}.`);
+      toast.error(
+        `الحد الأدنى لـ "${first.product.name}" هو ${first.product.minimum_order_quantity}.`,
+      );
       return;
     }
     if (totalQty < minQty) {
@@ -303,7 +317,9 @@ function Checkout() {
       <main className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 text-center">
         <CheckCircle2 className="h-16 w-16 text-primary" />
         <h1 className="mt-4 text-2xl font-extrabold">تم تسجيل طلبك بنجاح!</h1>
-        <p className="mt-2 text-sm text-muted-foreground">سنتواصل معك قريباً لتأكيد التوصيل. شكراً لثقتك بـ تين ليوا.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          سنتواصل معك قريباً لتأكيد التوصيل. شكراً لثقتك بـ تين ليوا.
+        </p>
         <div className="mt-6 w-full rounded-2xl border border-border/60 bg-card p-4">
           <span className="text-sm text-muted-foreground">رقم التتبع الخاص بك</span>
           <div className="mt-1 text-xl font-extrabold tracking-wider text-primary">{tracking}</div>
@@ -312,10 +328,17 @@ function Checkout() {
           </div>
         </div>
         <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
-          <Link to="/track" search={{ code: tracking }} className="flex-1 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+          <Link
+            to="/track"
+            search={{ code: tracking }}
+            className="flex-1 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
             تتبع الطلب
           </Link>
-          <Link to="/" className="flex-1 rounded-xl border border-border px-6 py-3 text-sm font-bold hover:bg-secondary">
+          <Link
+            to="/"
+            className="flex-1 rounded-xl border border-border px-6 py-3 text-sm font-bold hover:bg-secondary"
+          >
             العودة للمتجر
           </Link>
         </div>
@@ -327,19 +350,26 @@ function Checkout() {
     return (
       <main className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 text-center">
         <h1 className="text-xl font-bold">سلة التسوق فارغة</h1>
-        <button onClick={() => navigate({ to: "/" })} className="mt-4 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="mt-4 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+        >
           تصفح المنتجات
         </button>
       </main>
     );
   }
 
-  const field = "w-full rounded-xl border border-border bg-secondary px-4 py-3 text-sm outline-none focus:border-primary transition-all";
+  const field =
+    "w-full rounded-xl border border-border bg-secondary px-4 py-3 text-sm outline-none focus:border-primary transition-all";
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-2xl font-extrabold">تسجيل الطلب</h1>
-      <p className="mt-1 text-sm text-muted-foreground">سيتم تحويلك إلى بوابة الدفع <span className="font-bold text-foreground">Ziina</span> بعد تأكيد البيانات.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        سيتم تحويلك إلى بوابة الدفع <span className="font-bold text-foreground">Ziina</span> بعد
+        تأكيد البيانات.
+      </p>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <form onSubmit={submit} className="space-y-3.5">
@@ -397,7 +427,9 @@ function Checkout() {
             {emailError && (
               <p className="mt-1 text-xs font-semibold text-destructive">{emailError}</p>
             )}
-            <p className="mt-1 text-[11px] text-muted-foreground">سنرسل لك تفاصيل الفاتورة ورابط التتبع عبر البريد.</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              سنرسل لك تفاصيل الفاتورة ورابط التتبع عبر البريد.
+            </p>
           </div>
 
           {/* Phone Field with Validation Feedback */}
@@ -462,7 +494,8 @@ function Checkout() {
             <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs font-semibold text-destructive space-y-1">
               {belowItems.map((i) => (
                 <div key={i.product.id}>
-                  الحد الأدنى لـ "{i.product.name}" هو {i.product.minimum_order_quantity} (لديك {i.qty}).
+                  الحد الأدنى لـ "{i.product.name}" هو {i.product.minimum_order_quantity} (لديك{" "}
+                  {i.qty}).
                 </div>
               ))}
             </div>
@@ -478,7 +511,9 @@ function Checkout() {
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-sm"
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {submitting ? "جارٍ تجهيز الدفع..." : `الدفع عبر Ziina — ${grandTotal.toFixed(2)} ${CURRENCY}`}
+            {submitting
+              ? "جارٍ تجهيز الدفع..."
+              : `الدفع عبر Ziina — ${grandTotal.toFixed(2)} ${CURRENCY}`}
           </button>
         </form>
 
@@ -487,7 +522,7 @@ function Checkout() {
             <Receipt className="h-4 w-4 text-primary" />
             <h2 className="font-bold text-foreground">ملخص الطلب</h2>
           </div>
-          
+
           <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
             {items.map((i) => (
               <div key={i.product.id} className="flex justify-between items-center text-sm">
@@ -495,7 +530,9 @@ function Checkout() {
                   <span className="font-medium text-foreground">{i.product.name}</span>
                   <span className="text-xs text-muted-foreground mr-1">× {i.qty}</span>
                 </div>
-                <span className="font-semibold text-foreground">{(i.product.price * i.qty).toFixed(2)} {CURRENCY}</span>
+                <span className="font-semibold text-foreground">
+                  {(i.product.price * i.qty).toFixed(2)} {CURRENCY}
+                </span>
               </div>
             ))}
           </div>
@@ -503,12 +540,16 @@ function Checkout() {
           <div className="space-y-2 border-t border-border/60 pt-3 text-sm">
             <div className="flex justify-between text-muted-foreground">
               <span>المجموع الفرعي (Subtotal)</span>
-              <span className="font-medium text-foreground">{total.toFixed(2)} {CURRENCY}</span>
+              <span className="font-medium text-foreground">
+                {total.toFixed(2)} {CURRENCY}
+              </span>
             </div>
-            
+
             <div className="flex justify-between text-muted-foreground">
               <span>رسوم التوصيل{form.emirate ? ` (${form.emirate})` : ""}</span>
-              <span className="font-medium text-foreground">{form.emirate ? `${deliveryFee.toFixed(2)} ${CURRENCY}` : "—"}</span>
+              <span className="font-medium text-foreground">
+                {form.emirate ? `${deliveryFee.toFixed(2)} ${CURRENCY}` : "—"}
+              </span>
             </div>
 
             {taxConfig.enabled && taxConfig.rate > 0 && (
@@ -519,13 +560,17 @@ function Checkout() {
                     %{taxConfig.rate}
                   </span>
                 </span>
-                <span className="font-medium text-foreground">{taxAmount.toFixed(2)} {CURRENCY}</span>
+                <span className="font-medium text-foreground">
+                  {taxAmount.toFixed(2)} {CURRENCY}
+                </span>
               </div>
             )}
 
             <div className="flex justify-between border-t border-border/60 pt-3 text-base font-extrabold">
               <span className="text-foreground">الإجمالي النهائي</span>
-              <span className="text-primary text-lg">{grandTotal.toFixed(2)} {CURRENCY}</span>
+              <span className="text-primary text-lg">
+                {grandTotal.toFixed(2)} {CURRENCY}
+              </span>
             </div>
           </div>
 
@@ -538,4 +583,3 @@ function Checkout() {
     </main>
   );
 }
-

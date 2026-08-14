@@ -52,7 +52,7 @@ try {
   execSync("npm run build", { stdio: "inherit", env: deployEnv });
 
   console.log("\nDeploying to Cloudflare Pages...");
-  execSync("npx wrangler pages deploy dist --project-name ez-checkout", {
+  execSync("npx wrangler pages deploy dist --project-name teenliwa", {
     stdio: "inherit",
     env: deployEnv,
   });

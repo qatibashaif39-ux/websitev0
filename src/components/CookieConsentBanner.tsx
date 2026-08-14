@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Cookie, ShieldCheck, SlidersHorizontal, Check, X, ChevronDown, ChevronUp, Lock, BarChart3, Target } from "lucide-react";
+import {
+  Cookie,
+  ShieldCheck,
+  SlidersHorizontal,
+  Check,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Lock,
+  BarChart3,
+  Target,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -56,7 +67,8 @@ export function CookieConsentBanner() {
     };
   }, []);
 
-  if (!visible) return <CookiePolicyModal isOpen={policyOpen} onClose={() => setPolicyOpen(false)} />;
+  if (!visible)
+    return <CookiePolicyModal isOpen={policyOpen} onClose={() => setPolicyOpen(false)} />;
 
   const handleAcceptAll = () => {
     acceptAllCookies();
@@ -94,7 +106,9 @@ export function CookieConsentBanner() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-extrabold text-foreground">
-                    {isAr ? "ملفات تعريف الارتباط وتفضيلات الخصوصية" : "Cookie Preferences & Privacy Agreement"}
+                    {isAr
+                      ? "ملفات تعريف الارتباط وتفضيلات الخصوصية"
+                      : "Cookie Preferences & Privacy Agreement"}
                   </h3>
                   <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
                     {isAr ? "حماية الخصوصية" : "Privacy First"}
@@ -128,7 +142,11 @@ export function CookieConsentBanner() {
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 {isAr ? "تخصيص الخيارات" : "Customize"}
-                {showCustomize ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                {showCustomize ? (
+                  <ChevronUp className="h-3 w-3" />
+                ) : (
+                  <ChevronDown className="h-3 w-3" />
+                )}
               </Button>
 
               <Button
@@ -155,7 +173,9 @@ export function CookieConsentBanner() {
           {showCustomize && (
             <div className="mt-5 border-t border-border/60 pt-4 space-y-3 animate-in fade-in duration-300">
               <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground text-right">
-                {isAr ? "إدارة وتخصيص أذونات التتبع وملفات الارتباط" : "Manage Specific Cookie Categories"}
+                {isAr
+                  ? "إدارة وتخصيص أذونات التتبع وملفات الارتباط"
+                  : "Manage Specific Cookie Categories"}
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -249,6 +269,8 @@ export function CookieConsentBanner() {
 
 export function openCookieSettings() {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("teenliwa_open_cookie_settings", { detail: { forceOpen: true } }));
+    window.dispatchEvent(
+      new CustomEvent("teenliwa_open_cookie_settings", { detail: { forceOpen: true } }),
+    );
   }
 }

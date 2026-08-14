@@ -1,6 +1,17 @@
 import { createFileRoute, Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, ShoppingBag, Store, Tags, LogOut, Loader2, Settings, Database, Megaphone } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  Store,
+  Tags,
+  LogOut,
+  Loader2,
+  Settings,
+  Database,
+  Megaphone,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export const Route = createFileRoute("/dashboard")({
@@ -24,8 +35,6 @@ const NAV = [
   { to: "/dashboard/database", label: "قاعدة البيانات D1", icon: Database, exact: false },
   { to: "/dashboard/settings", label: "الإعدادات", icon: Settings, exact: false },
 ] as const;
-
-
 
 function DashboardLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -60,7 +69,10 @@ function DashboardLayout() {
           >
             تسجيل الخروج
           </button>
-          <Link to="/" className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+          <Link
+            to="/"
+            className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
             العودة للمتجر
           </Link>
         </div>

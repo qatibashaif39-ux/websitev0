@@ -1,8 +1,24 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Share2, Copy, Check, MessageCircle, Send, Twitter, Facebook, Sparkles, Mail } from "lucide-react";
+import {
+  Share2,
+  Copy,
+  Check,
+  MessageCircle,
+  Send,
+  Twitter,
+  Facebook,
+  Sparkles,
+  Mail,
+} from "lucide-react";
 import { type Product, CURRENCY } from "@/data/products";
 
 interface ShareModalProps {
@@ -75,7 +91,7 @@ export function ShareModal({ product, isOpen, onClose }: ShareModalProps) {
   const shareEmail = () => {
     const subject = encodeURIComponent(`تين ليوا — ${product.name}`);
     const body = encodeURIComponent(
-      `مرحباً،\n\nأود مشاركة هذا المنتج الرائع معك:\n${product.name}\nالسعر: ${product.price} ${CURRENCY}\n\nيمكنك الاطلاع عليه وطلبه عبر الرابط التالي:\n${shareUrl}\n\nشكراً لك!`
+      `مرحباً،\n\nأود مشاركة هذا المنتج الرائع معك:\n${product.name}\nالسعر: ${product.price} ${CURRENCY}\n\nيمكنك الاطلاع عليه وطلبه عبر الرابط التالي:\n${shareUrl}\n\nشكراً لك!`,
     );
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };

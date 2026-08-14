@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/create-ziina-payment")({
               {
                 status: 200,
                 headers: { "Content-Type": "application/json" },
-              }
+              },
             );
           }
 
@@ -61,10 +61,13 @@ export const Route = createFileRoute("/api/create-ziina-payment")({
           if (!res.ok) {
             const text = await res.text();
             console.error("[ziina] create payment failed", res.status, text);
-            return new Response(JSON.stringify({ error: "ziina_error", status: res.status, detail: text }), {
-              status: 502,
-              headers: { "Content-Type": "application/json" },
-            });
+            return new Response(
+              JSON.stringify({ error: "ziina_error", status: res.status, detail: text }),
+              {
+                status: 502,
+                headers: { "Content-Type": "application/json" },
+              },
+            );
           }
 
           const json = await res.json();

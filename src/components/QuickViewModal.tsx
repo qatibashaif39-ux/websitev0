@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Minus, Share2, ShoppingBag, Star, Check, Sparkles, X, ExternalLink } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  Share2,
+  ShoppingBag,
+  Star,
+  Check,
+  Sparkles,
+  X,
+  ExternalLink,
+} from "lucide-react";
 import { type Product, CURRENCY } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -114,12 +124,8 @@ export function QuickViewModal({ product, isOpen, onClose, onOpenShare }: QuickV
                       </Link>
                     </div>
                     <div className="mt-2 flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-primary">
-                        {product.price}
-                      </span>
-                      <span className="text-base font-bold text-foreground">
-                        {CURRENCY}
-                      </span>
+                      <span className="text-3xl font-black text-primary">{product.price}</span>
+                      <span className="text-base font-bold text-foreground">{CURRENCY}</span>
                     </div>
                   </div>
 
@@ -208,11 +214,7 @@ export function QuickViewModal({ product, isOpen, onClose, onOpenShare }: QuickV
       </Dialog>
 
       {/* Internal Share Modal fallback */}
-      <ShareModal
-        product={product}
-        isOpen={shareOpen}
-        onClose={() => setShareOpen(false)}
-      />
+      <ShareModal product={product} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </>
   );
 }

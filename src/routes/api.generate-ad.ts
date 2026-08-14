@@ -16,7 +16,13 @@ export const Route = createFileRoute("/api/generate-ad")({
       POST: async ({ request }) => {
         try {
           const body = await request.json();
-          const { platform = "meta", productName = "تين أحمر وأصفر طازج", productPrice = 85, productCategory = "فواكه طازجة", objective = "conversions" } = body ?? {};
+          const {
+            platform = "meta",
+            productName = "تين أحمر وأصفر طازج",
+            productPrice = 85,
+            productCategory = "فواكه طازجة",
+            objective = "conversions",
+          } = body ?? {};
 
           const systemInstruction = `أنت خبير تسويق أداء وحملات إعلانية مدفوعة متقدمة لـ Meta Ads (Facebook & Instagram) و TikTok Ads في دولة الإمارات ودول الخليج العربي. 
 أنت متخصص في تحويل الزوار إلى مشترين لمنتجات الأطعمة الفاخرة والتين والتمور (تين ليوا).
@@ -59,7 +65,16 @@ export const Route = createFileRoute("/api/generate-ad")({
                   },
                   budgetAdvice: { type: Type.STRING },
                 },
-                required: ["headline", "primaryText", "description", "callToAction", "targetAudience", "visualHook", "hashtags", "budgetAdvice"],
+                required: [
+                  "headline",
+                  "primaryText",
+                  "description",
+                  "callToAction",
+                  "targetAudience",
+                  "visualHook",
+                  "hashtags",
+                  "budgetAdvice",
+                ],
               },
             },
           });
@@ -74,10 +89,13 @@ export const Route = createFileRoute("/api/generate-ad")({
               primaryText: `قطف يومي طازج من مزارع ليوا الإنسانية مباشرة إلى باب منزلك في جميع إمارات الدولة. اطلب الآن واستمتع بطعم لا يُنسى!`,
               description: `توصيل سريع في نفس اليوم | دفع آمن 100%`,
               callToAction: "اطلب الآن",
-              targetAudience: "رجال ونساء في الإمارات (25-55 سنة)، المهتمين بالفواكه الطازجة والتغذية الصحية والمنتجات الوطنية.",
-              visualHook: "مشهد فيديو سريع يظهر فتح صندوق التين الفاخر واستعراض حبات التين الحمراء العصيرية.",
+              targetAudience:
+                "رجال ونساء في الإمارات (25-55 سنة)، المهتمين بالفواكه الطازجة والتغذية الصحية والمنتجات الوطنية.",
+              visualHook:
+                "مشهد فيديو سريع يظهر فتح صندوق التين الفاخر واستعراض حبات التين الحمراء العصيرية.",
               hashtags: ["#تين_ليوا", "#فواكه_الإمارات", "#توصيل_سريع", "#MetaAds"],
-              budgetAdvice: "ميزانية مبدئية: 50-100 درهم يومياً مع اختبار جمهور الإمارات واستراتيجية Highest Volume.",
+              budgetAdvice:
+                "ميزانية مبدئية: 50-100 درهم يومياً مع اختبار جمهور الإمارات واستراتيجية Highest Volume.",
             };
           }
 
@@ -96,7 +114,7 @@ export const Route = createFileRoute("/api/generate-ad")({
             {
               status: 500,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
       },

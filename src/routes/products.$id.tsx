@@ -42,12 +42,10 @@ export const Route = createFileRoute("/products/$id")({
         content: "جودة استثنائية، مذاق عسلي طازج، وتوصيل سريع ومبرد لجميع إمارات الدولة.",
       },
       { property: "og:type", content: "product" },
-      { property: "og:url", content: `https://teenliwa.ae/products/${params.id}` },
+      { property: "og:url", content: `https://teenliwa.com/products/${params.id}` },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      { rel: "canonical", href: `https://teenliwa.ae/products/${params.id}` },
-    ],
+    links: [{ rel: "canonical", href: `https://teenliwa.com/products/${params.id}` }],
   }),
   component: ProductDetailPage,
 });
@@ -122,7 +120,10 @@ function ProductDetailPage() {
     },
     offers: {
       "@type": "Offer",
-      url: typeof window !== "undefined" ? window.location.href : `https://teenliwa.ae/products/${product.id}`,
+      url:
+        typeof window !== "undefined"
+          ? window.location.href
+          : `https://teenliwa.ae/products/${product.id}`,
       priceCurrency: "AED",
       price: product.price,
       availability: product.available
@@ -216,9 +217,7 @@ function ProductDetailPage() {
                     <span className="text-3xl sm:text-4xl font-black text-primary">
                       {product.price}
                     </span>
-                    <span className="text-lg font-bold text-foreground">
-                      {CURRENCY}
-                    </span>
+                    <span className="text-lg font-bold text-foreground">{CURRENCY}</span>
                   </div>
                 </div>
 
@@ -265,9 +264,17 @@ function ProductDetailPage() {
                     </span>
                     {(minQty > 1 || maxQty) && (
                       <p className="text-[11px] text-muted-foreground font-medium">
-                        {minQty > 1 ? (isAr ? `أقل كمية للطلب: ${minQty}` : `Min order: ${minQty}`) : ""}
+                        {minQty > 1
+                          ? isAr
+                            ? `أقل كمية للطلب: ${minQty}`
+                            : `Min order: ${minQty}`
+                          : ""}
                         {minQty > 1 && maxQty ? " | " : ""}
-                        {maxQty ? (isAr ? `أقصى كمية للطلب: ${maxQty}` : `Max order: ${maxQty}`) : ""}
+                        {maxQty
+                          ? isAr
+                            ? `أقصى كمية للطلب: ${maxQty}`
+                            : `Max order: ${maxQty}`
+                          : ""}
                       </p>
                     )}
                   </div>
@@ -324,11 +331,7 @@ function ProductDetailPage() {
       </div>
 
       {/* Share Modal */}
-      <ShareModal
-        product={product}
-        isOpen={shareOpen}
-        onClose={() => setShareOpen(false)}
-      />
+      <ShareModal product={product} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </main>
   );
 }

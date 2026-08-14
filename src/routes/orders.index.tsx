@@ -58,7 +58,9 @@ function Orders() {
       if (time === "30d" && now - o.createdAt > 30 * DAY) return false;
       return true;
     });
-    result.sort((a: Order, b: Order) => (sort === "newest" ? b.createdAt - a.createdAt : a.createdAt - b.createdAt));
+    result.sort((a: Order, b: Order) =>
+      sort === "newest" ? b.createdAt - a.createdAt : a.createdAt - b.createdAt,
+    );
     return result;
   }, [all, status, time, sort]);
 
@@ -66,14 +68,18 @@ function Orders() {
   const current = Math.min(page, totalPages);
   const paged = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
-  const resetPage = <T,>(setter: (v: T) => void) => (v: T) => {
-    setter(v);
-    setPage(1);
-  };
+  const resetPage =
+    <T,>(setter: (v: T) => void) =>
+    (v: T) => {
+      setter(v);
+      setPage(1);
+    };
 
   const chip = (active: boolean) =>
     `rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
-      active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
+      active
+        ? "bg-primary text-primary-foreground"
+        : "bg-secondary text-muted-foreground hover:text-foreground"
     }`;
 
   return (
@@ -81,34 +87,52 @@ function Orders() {
       <h1 className="flex items-center gap-2 text-2xl font-extrabold">
         <Package className="h-6 w-6 text-primary" /> طلباتي
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">تابع جميع طلباتك وصفّها حسب الحالة والوقت.</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        تابع جميع طلباتك وصفّها حسب الحالة والوقت.
+      </p>
 
       <div className="mt-6 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           {STATUS_FILTERS.map((f) => (
-            <button key={f.key} onClick={() => resetPage(setStatus)(f.key)} className={chip(status === f.key)}>
+            <button
+              key={f.key}
+              onClick={() => resetPage(setStatus)(f.key)}
+              className={chip(status === f.key)}
+            >
               {f.label}
             </button>
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {TIME_FILTERS.map((f) => (
-            <button key={f.key} onClick={() => resetPage(setTime)(f.key)} className={chip(time === f.key)}>
+            <button
+              key={f.key}
+              onClick={() => resetPage(setTime)(f.key)}
+              className={chip(time === f.key)}
+            >
               {f.label}
             </button>
           ))}
-          <button onClick={() => resetPage(setSort)(sort === "newest" ? "oldest" : "newest")} className={chip(false)}>
+          <button
+            onClick={() => resetPage(setSort)(sort === "newest" ? "oldest" : "newest")}
+            className={chip(false)}
+          >
             {sort === "newest" ? "الأحدث أولاً" : "الأقدم أولاً"}
           </button>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="mt-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+        <div className="mt-10 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       ) : paged.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-border/60 bg-card p-8 text-center">
           <p className="text-sm text-muted-foreground">لا توجد طلبات مطابقة.</p>
-          <Link to="/" className="mt-4 inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+          <Link
+            to="/"
+            className="mt-4 inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
             تصفح المنتجات
           </Link>
         </div>
@@ -129,8 +153,12 @@ function Orders() {
               </div>
               <div className="flex items-center gap-2 text-left">
                 <div>
-                  <div className="font-semibold">{order.total.toFixed(2)} {CURRENCY}</div>
-                  <div className={`mt-1 text-xs font-bold ${isCancelled(order.status) ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div className="font-semibold">
+                    {order.total.toFixed(2)} {CURRENCY}
+                  </div>
+                  <div
+                    className={`mt-1 text-xs font-bold ${isCancelled(order.status) ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {statusLabel(order)}
                   </div>
                 </div>
@@ -143,14 +171,30 @@ function Orders() {
 
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-2">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={current === 1} className="rounded-lg border border-border px-3 py-1.5 text-sm font-bold disabled:opacity-40">السابق</button>
-          <span className="text-sm text-muted-foreground">صفحة {current} من {totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={current === totalPages} className="rounded-lg border border-border px-3 py-1.5 text-sm font-bold disabled:opacity-40">التالي</button>
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={current === 1}
+            className="rounded-lg border border-border px-3 py-1.5 text-sm font-bold disabled:opacity-40"
+          >
+            السابق
+          </button>
+          <span className="text-sm text-muted-foreground">
+            صفحة {current} من {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={current === totalPages}
+            className="rounded-lg border border-border px-3 py-1.5 text-sm font-bold disabled:opacity-40"
+          >
+            التالي
+          </button>
         </div>
       )}
 
       <div className="mt-8 text-center">
-        <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-foreground">العودة للمتجر</Link>
+        <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
+          العودة للمتجر
+        </Link>
       </div>
     </main>
   );

@@ -1,7 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Save, KeyRound, Info, Globe, Activity, ShoppingCart, Share2, Receipt, Percent } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  KeyRound,
+  Info,
+  Globe,
+  Activity,
+  ShoppingCart,
+  Share2,
+  Receipt,
+  Percent,
+} from "lucide-react";
 import { toast } from "sonner";
 import { CURRENCY } from "@/data/products";
 
@@ -71,7 +82,6 @@ async function upsertSetting(key: string, value: string) {
     console.error("[Settings] Save setting failed:", err);
   }
 }
-
 
 function DashboardSettings() {
   const qc = useQueryClient();
@@ -147,20 +157,27 @@ function DashboardSettings() {
   });
 
   if (isLoading) {
-    return <div className="flex min-h-[30vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  const field = "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors";
+  const field =
+    "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors";
   const numTaxRate = Math.max(0, parseFloat(taxRate) || 0);
   const sampleOrderSubtotal = 100;
-  const sampleTax = taxEnabled ? (sampleOrderSubtotal * (numTaxRate / 100)) : 0;
+  const sampleTax = taxEnabled ? sampleOrderSubtotal * (numTaxRate / 100) : 0;
   const sampleTotal = sampleOrderSubtotal + sampleTax;
 
   return (
     <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold">الإعدادات</h1>
-        <p className="mt-1 text-sm text-muted-foreground">إدارة بوابة الدفع، الضرائب، إعلانات Meta وTikTok، والحدود التشغيلية للمتجر.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          إدارة بوابة الدفع، الضرائب، إعلانات Meta وTikTok، والحدود التشغيلية للمتجر.
+        </p>
       </div>
 
       {/* Tax and VAT Section */}
@@ -170,7 +187,8 @@ function DashboardSettings() {
           <h2 className="font-bold">إعدادات الضريبة والقيمة المضافة (Tax & VAT)</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          تحكم في حساب وتطبيق ضريبة القيمة المضافة على طلبات المتجر مع إظهارها بشكل منفصل ومفصل في صفحة الدفع والفاتورة.
+          تحكم في حساب وتطبيق ضريبة القيمة المضافة على طلبات المتجر مع إظهارها بشكل منفصل ومفصل في
+          صفحة الدفع والفاتورة.
         </p>
 
         <label className="flex cursor-pointer items-center gap-2.5 text-sm pt-2">
@@ -180,7 +198,9 @@ function DashboardSettings() {
             onChange={(e) => setTaxEnabled(e.target.checked)}
             className="h-4 w-4 rounded accent-primary cursor-pointer"
           />
-          <span className="font-bold text-foreground">تفعيل احتساب الضريبة في صفحة إتمام الطلب (Enable Tax Calculation)</span>
+          <span className="font-bold text-foreground">
+            تفعيل احتساب الضريبة في صفحة إتمام الطلب (Enable Tax Calculation)
+          </span>
         </label>
 
         {taxEnabled && (
@@ -219,15 +239,23 @@ function DashboardSettings() {
               <div className="font-bold text-foreground mb-1">معاينة مباشرة لتطبيق الضريبة:</div>
               <div className="flex justify-between text-muted-foreground">
                 <span>طلب تجريبي بقيمة:</span>
-                <span>{sampleOrderSubtotal.toFixed(2)} {CURRENCY}</span>
+                <span>
+                  {sampleOrderSubtotal.toFixed(2)} {CURRENCY}
+                </span>
               </div>
               <div className="flex justify-between text-primary font-semibold">
-                <span>{taxLabel} ({numTaxRate}%):</span>
-                <span>+{sampleTax.toFixed(2)} {CURRENCY}</span>
+                <span>
+                  {taxLabel} ({numTaxRate}%):
+                </span>
+                <span>
+                  +{sampleTax.toFixed(2)} {CURRENCY}
+                </span>
               </div>
               <div className="flex justify-between border-t border-border/40 pt-1.5 font-bold text-foreground">
                 <span>الإجمالي المحتسب للعميل:</span>
-                <span>{sampleTotal.toFixed(2)} {CURRENCY}</span>
+                <span>
+                  {sampleTotal.toFixed(2)} {CURRENCY}
+                </span>
               </div>
             </div>
           </div>
@@ -240,7 +268,10 @@ function DashboardSettings() {
           <h2 className="font-bold">دومين الموقع</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          الدومين الكامل المستخدم في روابط نجاح/إلغاء الدفع. مثال: <span dir="ltr" className="font-mono">https://teenliwa.com</span>
+          الدومين الكامل المستخدم في روابط نجاح/إلغاء الدفع. مثال:{" "}
+          <span dir="ltr" className="font-mono">
+            https://teenliwa.com
+          </span>
         </p>
         <input
           dir="ltr"
@@ -259,7 +290,16 @@ function DashboardSettings() {
           <h2 className="font-bold">بوابة الدفع — Ziina</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          أدخل مفتاح API من <a href="https://docs.ziina.com" target="_blank" rel="noreferrer" className="text-primary underline">docs.ziina.com</a>.
+          أدخل مفتاح API من{" "}
+          <a
+            href="https://docs.ziina.com"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline"
+          >
+            docs.ziina.com
+          </a>
+          .
         </p>
         <label className="mt-4 block text-sm font-semibold">مفتاح Ziina API</label>
         <div className="mt-2 flex gap-2">
@@ -272,12 +312,21 @@ function DashboardSettings() {
             autoComplete="off"
             spellCheck={false}
           />
-          <button type="button" onClick={() => setShowKey((v) => !v)} className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary">
+          <button
+            type="button"
+            onClick={() => setShowKey((v) => !v)}
+            className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary"
+          >
             {showKey ? "إخفاء" : "إظهار"}
           </button>
         </div>
         <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm">
-          <input type="checkbox" checked={testMode} onChange={(e) => setTestMode(e.target.checked)} className="h-4 w-4 accent-primary" />
+          <input
+            type="checkbox"
+            checked={testMode}
+            onChange={(e) => setTestMode(e.target.checked)}
+            className="h-4 w-4 accent-primary"
+          />
           <span className="font-semibold">وضع الاختبار (Test Mode)</span>
         </label>
         <div className="mt-3 flex items-start gap-2 rounded-xl bg-secondary/60 p-3 text-xs text-muted-foreground">
@@ -292,7 +341,8 @@ function DashboardSettings() {
           <h2 className="font-bold">تتبع Meta Ads Pixel (Facebook & Instagram)</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          معرّف بكسل فيسبوك لتتبع الزيارات، إضافة للسلة، وبدء وإتمام الطلب (PageView, AddToCart, InitiateCheckout, Purchase).
+          معرّف بكسل فيسبوك لتتبع الزيارات، إضافة للسلة، وبدء وإتمام الطلب (PageView, AddToCart,
+          InitiateCheckout, Purchase).
         </p>
 
         <label className="mt-4 block text-sm font-semibold">Meta Pixel ID</label>
@@ -306,7 +356,9 @@ function DashboardSettings() {
           spellCheck={false}
         />
 
-        <label className="mt-4 block text-sm font-semibold">Meta Conversions API Token (اختياري)</label>
+        <label className="mt-4 block text-sm font-semibold">
+          Meta Conversions API Token (اختياري)
+        </label>
         <div className="mt-2 flex gap-2">
           <input
             dir="ltr"
@@ -318,7 +370,11 @@ function DashboardSettings() {
             autoComplete="off"
             spellCheck={false}
           />
-          <button type="button" onClick={() => setShowMeta((v) => !v)} className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary">
+          <button
+            type="button"
+            onClick={() => setShowMeta((v) => !v)}
+            className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary"
+          >
             {showMeta ? "إخفاء" : "إظهار"}
           </button>
         </div>
@@ -330,7 +386,8 @@ function DashboardSettings() {
           <h2 className="font-bold">تتبع إعلانات TikTok (TikTok Ads Pixel)</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          بكسل TikTok يعمل في المتصفح مع Advanced Matching لربط الهواتف والبريد الإلكتروني وأحداث InitiateCheckout و CompletePayment.
+          بكسل TikTok يعمل في المتصفح مع Advanced Matching لربط الهواتف والبريد الإلكتروني وأحداث
+          InitiateCheckout و CompletePayment.
         </p>
 
         <label className="mt-4 block text-sm font-semibold">TikTok Pixel ID</label>
@@ -344,7 +401,9 @@ function DashboardSettings() {
           spellCheck={false}
         />
 
-        <label className="mt-4 block text-sm font-semibold">TikTok Events API Access Token (اختياري)</label>
+        <label className="mt-4 block text-sm font-semibold">
+          TikTok Events API Access Token (اختياري)
+        </label>
         <div className="mt-2 flex gap-2">
           <input
             dir="ltr"
@@ -356,7 +415,11 @@ function DashboardSettings() {
             autoComplete="off"
             spellCheck={false}
           />
-          <button type="button" onClick={() => setShowTt((v) => !v)} className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary">
+          <button
+            type="button"
+            onClick={() => setShowTt((v) => !v)}
+            className="rounded-xl border border-border px-3 text-xs font-bold hover:bg-secondary"
+          >
             {showTt ? "إخفاء" : "إظهار"}
           </button>
         </div>
@@ -368,7 +431,8 @@ function DashboardSettings() {
           <h2 className="font-bold">الحد الأدنى للطلب العام</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          أقل كمية إجمالية مسموح بها لتسجيل الطلب. مثال: عند ضبطه على 2، لن يُقبل طلب بكمية إجمالية أقل من 2.
+          أقل كمية إجمالية مسموح بها لتسجيل الطلب. مثال: عند ضبطه على 2، لن يُقبل طلب بكمية إجمالية
+          أقل من 2.
         </p>
         <label className="mt-4 block text-sm font-semibold">أدنى كمية</label>
         <input
@@ -440,7 +504,11 @@ function DashboardSettings() {
         disabled={save.isPending}
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-sm"
       >
-        {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        {save.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Save className="h-4 w-4" />
+        )}
         حفظ الإعدادات
       </button>
     </div>

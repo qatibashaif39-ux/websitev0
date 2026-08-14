@@ -22,18 +22,48 @@ function loadPixel(pixelId: string) {
   (function (w: any, d: any, t: any) {
     w.TiktokAnalyticsObject = t;
     var ttq: any = (w[t] = w[t] || []);
-    ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
-    ttq.setAndDefer = function (t: any, e: any) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))); }; };
+    ttq.methods = [
+      "page",
+      "track",
+      "identify",
+      "instances",
+      "debug",
+      "on",
+      "off",
+      "once",
+      "ready",
+      "alias",
+      "group",
+      "enableCookie",
+      "disableCookie",
+      "holdConsent",
+      "revokeConsent",
+      "grantConsent",
+    ];
+    ttq.setAndDefer = function (t: any, e: any) {
+      t[e] = function () {
+        t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    };
     for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
-    ttq.instance = function (t: any) { var e = ttq._i[t] || []; for (var n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e; };
+    ttq.instance = function (t: any) {
+      var e = ttq._i[t] || [];
+      for (var n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
+      return e;
+    };
     ttq.load = function (e: any, n: any) {
       var r = "https://analytics.tiktok.com/i18n/pixel/events.js";
       var o = n && n.partner;
-      ttq._i = ttq._i || {}; ttq._i[e] = []; ttq._i[e]._u = r;
-      ttq._t = ttq._t || {}; ttq._t[e] = +new Date();
-      ttq._o = ttq._o || {}; ttq._o[e] = n || {};
+      ttq._i = ttq._i || {};
+      ttq._i[e] = [];
+      ttq._i[e]._u = r;
+      ttq._t = ttq._t || {};
+      ttq._t[e] = +new Date();
+      ttq._o = ttq._o || {};
+      ttq._o[e] = n || {};
       var s = document.createElement("script");
-      s.type = "text/javascript"; s.async = !0;
+      s.type = "text/javascript";
+      s.async = !0;
       s.src = r + "?sdkid=" + e + "&lib=" + t;
       var a = document.getElementsByTagName("script")[0];
       a.parentNode!.insertBefore(s, a);
@@ -90,7 +120,11 @@ export function tiktokTrack(event: string, payload?: Record<string, unknown>) {
   }
 }
 
-export function tiktokIdentify(userData: { email?: string; phone_number?: string; external_id?: string }) {
+export function tiktokIdentify(userData: {
+  email?: string;
+  phone_number?: string;
+  external_id?: string;
+}) {
   if (typeof window === "undefined" || !window.ttq?.identify || !isMarketingAllowed()) return;
   try {
     const clean: Record<string, string> = {};

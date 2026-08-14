@@ -47,11 +47,12 @@ export const INITIAL_REVIEWS: Review[] = [
     comment: "تمور فاخرة وأصلية وطازجة، بارك الله لكم.",
     createdAt: "2026-08-11T11:00:00.000Z",
     verifiedPurchase: true,
-  }
+  },
 ];
 
 export function getProductReviews(productId: string): Review[] {
-  if (typeof window === "undefined") return INITIAL_REVIEWS.filter(r => r.productId === productId);
+  if (typeof window === "undefined")
+    return INITIAL_REVIEWS.filter((r) => r.productId === productId);
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const stored: Review[] = raw ? JSON.parse(raw) : INITIAL_REVIEWS;

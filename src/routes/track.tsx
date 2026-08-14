@@ -40,7 +40,9 @@ function Track() {
       <h1 className="flex items-center gap-2 text-2xl font-extrabold">
         <Package className="h-6 w-6 text-primary" /> تتبع الطلب
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">أدخل رقم التتبع الذي ظهر لك بعد إتمام الطلب.</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        أدخل رقم التتبع الذي ظهر لك بعد إتمام الطلب.
+      </p>
 
       <form
         onSubmit={(e) => {
@@ -55,7 +57,10 @@ function Track() {
           placeholder="مثال: TL-1234ABCDEF"
           className="w-full rounded-xl border border-border bg-secondary px-4 py-3 text-sm outline-none focus:border-primary"
         />
-        <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+        <button
+          type="submit"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+        >
           <Search className="h-4 w-4" /> تتبع
         </button>
       </form>
@@ -85,13 +90,19 @@ function Track() {
               {getTimeline(order).map((step, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   {step.reached ? (
-                    <CheckCircle2 className={`h-6 w-6 shrink-0 ${isCancelled(order.status) ? "text-destructive" : "text-primary"}`} />
+                    <CheckCircle2
+                      className={`h-6 w-6 shrink-0 ${isCancelled(order.status) ? "text-destructive" : "text-primary"}`}
+                    />
                   ) : (
                     <Circle className="h-6 w-6 shrink-0 text-muted-foreground/40" />
                   )}
                   <div>
-                    <span className={step.reached ? "font-semibold" : "text-muted-foreground"}>{step.label}</span>
-                    {step.at && <div className="text-xs text-muted-foreground">{formatDateTime(step.at)}</div>}
+                    <span className={step.reached ? "font-semibold" : "text-muted-foreground"}>
+                      {step.label}
+                    </span>
+                    {step.at && (
+                      <div className="text-xs text-muted-foreground">{formatDateTime(step.at)}</div>
+                    )}
                   </div>
                 </li>
               ))}
@@ -110,29 +121,42 @@ function Track() {
             <div className="space-y-2">
               {order.items.map((i) => (
                 <div key={i.id} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{i.name} × {i.qty}</span>
-                  <span className="font-semibold">{i.price * i.qty} {CURRENCY}</span>
+                  <span className="text-muted-foreground">
+                    {i.name} × {i.qty}
+                  </span>
+                  <span className="font-semibold">
+                    {i.price * i.qty} {CURRENCY}
+                  </span>
                 </div>
               ))}
             </div>
             <div className="mt-3 space-y-1.5 border-t border-border/60 pt-3 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>المجموع الفرعي</span>
-                <span>{order.subtotal?.toFixed(2) || (order.total - order.deliveryFee).toFixed(2)} {CURRENCY}</span>
+                <span>
+                  {order.subtotal?.toFixed(2) || (order.total - order.deliveryFee).toFixed(2)}{" "}
+                  {CURRENCY}
+                </span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>رسوم التوصيل ({order.emirate})</span>
-                <span>{order.deliveryFee?.toFixed(2) || "0.00"} {CURRENCY}</span>
+                <span>
+                  {order.deliveryFee?.toFixed(2) || "0.00"} {CURRENCY}
+                </span>
               </div>
               {order.tax && order.tax > 0 ? (
                 <div className="flex justify-between text-muted-foreground">
                   <span>ضريبة القيمة المضافة {order.taxRate ? `(${order.taxRate}%)` : ""}</span>
-                  <span>{order.tax.toFixed(2)} {CURRENCY}</span>
+                  <span>
+                    {order.tax.toFixed(2)} {CURRENCY}
+                  </span>
                 </div>
               ) : null}
               <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold">
                 <span>الإجمالي</span>
-                <span className="text-primary">{order.total.toFixed(2)} {CURRENCY}</span>
+                <span className="text-primary">
+                  {order.total.toFixed(2)} {CURRENCY}
+                </span>
               </div>
             </div>
           </div>
