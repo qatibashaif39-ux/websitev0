@@ -1,6 +1,11 @@
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, MessageCircle, Ghost } from "lucide-react";
+import { Facebook, Instagram, MessageCircle, Ghost, ShieldCheck, Cookie, Map } from "lucide-react";
 import { getAppSettings } from "@/lib/settings";
+import { useLanguage } from "@/context/LanguageContext";
+import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
+import { openCookieSettings } from "@/components/CookieConsentBanner";
 
 async function fetchSocials() {
     const settings = getAppSettings();
@@ -26,6 +31,10 @@ function normalizeUrl(v: string) {
 }
 
 export function Footer() {
+    const { t, lang } = useLanguage();
+    const isAr = lang === "ar";
+    const [privacyOpen, setPrivacyOpen] = useState(false);
+
     const { data } = useQuery({
         queryKey: ["app_settings", "socials"],
         queryFn: fetchSocials,
@@ -87,13 +96,59 @@ export function Footer() {
                     </div>
                 )}
 
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-5 sm:gap-6 text-xs text-muted-foreground">
+                    <Link
+                        to="/privacy"
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
+                    >
+                        <ShieldCheck className="h-4 w-4 text-primary" />
+                        {isAr ? "سياسة الخصوصية وحماية البيانات" : "Privacy Policy"}
+                    </Link>
+
+                    <button
+                        type="button"
+                        onClick={openCookieSettings}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+                    >
+                        <Cookie className="h-4 w-4 text-amber-400" />
+                        {isAr ? "إعدادات ملفات الارتباط (Cookies)" : "Cookie Settings"}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setPrivacyOpen(true)}
+                        className="hover:text-primary transition-colors cursor-pointer"
+                    >
+                        {isAr ? "معاينة سريعة للخصوصية" : "Quick Privacy Overview"}
+                    </button>
+
+                    <Link to="/orders" className="hover:text-primary transition-colors">
+                        {t("nav.orders")}
+                    </Link>
+
+                    <a
+                        href="/sitemap.xml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
+                    >
+                        <Map className="h-3.5 w-3.5 text-emerald-400" />
+                        {isAr ? "خريطة الموقع (Sitemap)" : "Sitemap (XML)"}
+                    </a>
+                </div>
+
                 <div className="mt-4 border-t border-border/40 pt-4 text-center">
                     <p className="text-xs text-muted-foreground">
                         جميع الحقوق محفوظة © {new Date().getFullYear()}{" "}
-                        gigatopx.com
+                        teenliwa.ae
                     </p>
                 </div>
             </div>
+
+            <PrivacyPolicyModal
+                isOpen={privacyOpen}
+                onClose={() => setPrivacyOpen(false)}
+            />
         </footer>
     );
 }

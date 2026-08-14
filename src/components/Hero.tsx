@@ -43,6 +43,7 @@ export function Hero() {
                             alt={product.name}
                             className="h-[42vh] min-h-[300px] w-full object-cover sm:h-[50vh]"
                             loading="lazy"
+                            decoding="async"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
                         <div className="absolute inset-0 flex items-end">

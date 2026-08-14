@@ -22,6 +22,7 @@ import { Toaster } from "../components/ui/sonner";
 import { Footer } from "../components/Footer";
 import { TikTokPixel } from "../components/TikTokPixel";
 import { MetaPixel } from "../components/MetaPixel";
+import { CookieConsentBanner } from "../components/CookieConsentBanner";
 
 function NotFoundComponent() {
     return (
@@ -95,26 +96,53 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
                 { charSet: "utf-8" },
                 {
                     name: "viewport",
-                    content: "width=device-width, initial-scale=1"
+                    content: "width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
                 },
-                { title: "تين ليوا — تين وتمور وفواكه فاخرة بالتوصيل" },
+                { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+                { name: "theme-color", content: "#1a1612" },
+                { name: "apple-mobile-web-app-capable", content: "yes" },
+                { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+                { name: "apple-mobile-web-app-title", content: "تين ليوا" },
+                { name: "application-name", content: "تين ليوا" },
+                { name: "format-detection", content: "telephone=no" },
+                { name: "mobile-web-app-capable", content: "yes" },
+                { title: "تين ليوا — تين وتمور وفواكه فاخرة بالتوصيل في نفس اليوم" },
                 {
                     name: "description",
                     content:
-                        "تين أحمر وأصفر طازج، تمور فاخرة، توت وصبار وفقع. القص والتوصيل في نفس اليوم داخل الإمارات."
+                        "أشهى أنواع التين الأحمر والأصفر الطازج، التمور الفاخرة، التوت البلدي، الصبار الحلو، الفقع، واللوز. قطاف يومي وتوصيل مبرد سريع لجميع إمارات الدولة."
+                },
+                {
+                    name: "keywords",
+                    content:
+                        "تين ليوا, تين طازج, تمور فاخرة الإمارات, توصيل فواكه طازجة, تين أحمر, تين أصفر, تمر مجدول, فقع كمأة, صبار تين شوكي, مزارع ليوا"
+                },
+                {
+                    name: "author",
+                    content: "متجر تين ليوا الرسمي"
                 },
                 {
                     property: "og:title",
-                    content: "تين ليوا — فواكه وتمور فاخرة"
+                    content: "تين ليوا — تين وتمور وفواكه فاخرة بالتوصيل في نفس اليوم"
                 },
                 {
                     property: "og:description",
-                    content: "تين طازج وتمور فاخرة بالتوصيل في نفس اليوم."
+                    content: "تين أحمر وأصفر طازج عسلي، تمور فاخرة، وفواكه موسمية مع ضمان الجودة والطزاجة."
                 },
                 { property: "og:type", content: "website" },
-                { name: "twitter:card", content: "summary" }
+                { property: "og:url", content: "https://teenliwa.ae" },
+                { property: "og:locale", content: "ar_AE" },
+                { property: "og:locale:alternate", content: "en_US" },
+                { property: "og:site_name", content: "تين ليوا — Teen Liwa" },
+                { name: "twitter:card", content: "summary_large_image" },
+                { name: "twitter:title", content: "تين ليوا — قطاف وتوصيل فواكه وتمور فاخرة" },
+                {
+                    name: "twitter:description",
+                    content: "فواكه وتمور طازجة من مزارع ليوا مع التوصيل المبرد في نفس اليوم داخل الإمارات."
+                }
             ],
             links: [
+                { rel: "canonical", href: "https://teenliwa.ae" },
                 { rel: "preconnect", href: "https://fonts.googleapis.com" },
                 {
                     rel: "preconnect",
@@ -123,7 +151,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
                 },
                 {
                     rel: "stylesheet",
-                    href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap"
+                    href: "https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
                 },
                 {
                     rel: "stylesheet",
@@ -174,6 +202,7 @@ function RootComponent() {
                         <Toaster position="top-center" richColors />
                         <TikTokPixel />
                         <MetaPixel />
+                        <CookieConsentBanner />
                     </CartProvider>
                 </AuthProvider>
             </LanguageProvider>

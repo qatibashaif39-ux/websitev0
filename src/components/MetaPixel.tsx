@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAppSetting } from "@/lib/settings";
+import { isMarketingAllowed, COOKIE_CONSENT_EVENT } from "@/lib/cookies";
 
 declare global {
   interface Window {
@@ -10,16 +11,27 @@ declare global {
 
 export function MetaPixel() {
   const [pixelId, setPixelId] = useState<string | null>(null);
+  const [hasConsent, setHasConsent] = useState(false);
 
   useEffect(() => {
     const val = getAppSetting("meta_pixel_id").trim();
     if (val) {
       setPixelId(val);
     }
+    setHasConsent(isMarketingAllowed());
+
+    const handleConsentUpdate = () => {
+      setHasConsent(isMarketingAllowed());
+    };
+
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleConsentUpdate);
+    return () => {
+      window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsentUpdate);
+    };
   }, []);
 
   useEffect(() => {
-    if (!pixelId || typeof window === "undefined") return;
+    if (!pixelId || !hasConsent || typeof window === "undefined") return;
 
     if (window.fbq) {
       window.fbq("init", pixelId);
@@ -49,7 +61,7 @@ export function MetaPixel() {
 
     window.fbq("init", pixelId);
     window.fbq("track", "PageView");
-  }, [pixelId]);
+  }, [pixelId, hasConsent]);
 
   return null;
 }

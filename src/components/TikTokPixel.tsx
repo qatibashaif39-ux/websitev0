@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { getAppSetting } from "@/lib/settings";
+import { isMarketingAllowed, COOKIE_CONSENT_EVENT } from "@/lib/cookies";
 
 declare global {
   interface Window {
@@ -51,14 +52,28 @@ export function TikTokPixel() {
     staleTime: 5 * 60 * 1000,
   });
   const router = useRouter();
+  const [hasConsent, setHasConsent] = useState(false);
 
   useEffect(() => {
-    if (pixelId) loadPixel(pixelId);
-  }, [pixelId]);
+    setHasConsent(isMarketingAllowed());
+    const handleConsentUpdate = () => {
+      setHasConsent(isMarketingAllowed());
+    };
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleConsentUpdate);
+    return () => {
+      window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsentUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pixelId && hasConsent) loadPixel(pixelId);
+  }, [pixelId, hasConsent]);
 
   useEffect(() => {
     const unsub = router.subscribe("onResolved", () => {
-      if (typeof window !== "undefined" && window.ttq?.page) window.ttq.page();
+      if (typeof window !== "undefined" && window.ttq?.page && isMarketingAllowed()) {
+        window.ttq.page();
+      }
     });
     return () => unsub();
   }, [router]);
@@ -67,6 +82,6 @@ export function TikTokPixel() {
 }
 
 export function tiktokTrack(event: string, payload?: Record<string, unknown>) {
-  if (typeof window === "undefined" || !window.ttq?.track) return;
+  if (typeof window === "undefined" || !window.ttq?.track || !isMarketingAllowed()) return;
   window.ttq.track(event, payload ?? {});
 }

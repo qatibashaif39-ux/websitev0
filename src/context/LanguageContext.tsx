@@ -56,7 +56,9 @@ const TRANSLATIONS: Dict = {
         en: "Teen Liwa specializes in providing the finest types of fresh natural figs, dates, and fruits, with same-day harvesting and delivery within the UAE. Premium quality and honey-like taste."
     },
     "product.add": { ar: "أضف إلى السلة", en: "Add to Cart" },
-    "product.upcoming": { ar: "قريباً", en: "Upcoming" }
+    "product.upcoming": { ar: "قريباً", en: "Upcoming" },
+    "privacy.title": { ar: "سياسة الخصوصية", en: "Privacy Policy" },
+    "privacy.subtitle": { ar: "حماية البيانات وسرية المعلومات", en: "Data Protection & Privacy" }
 };
 
 interface LanguageContextValue {
