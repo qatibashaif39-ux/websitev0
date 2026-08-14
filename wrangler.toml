@@ -1,12 +1,9 @@
-name = "websitev0"
+name = "teenliwa"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 pages_build_output_dir = "dist/client"
-main = "src/server.ts"
 
- [assets]
-directory = "./dist"
 [[d1_databases]]
 binding = "DB1"
 database_name = "teenliwa-db"
