@@ -65,3 +65,25 @@ export function MetaPixel() {
 
   return null;
 }
+
+export function metaTrack(event: string, payload?: Record<string, unknown>, eventId?: string) {
+  if (typeof window === "undefined" || !window.fbq || !isMarketingAllowed()) return;
+  try {
+    if (eventId) {
+      window.fbq("track", event, payload ?? {}, { eventID: eventId });
+    } else {
+      window.fbq("track", event, payload ?? {});
+    }
+  } catch (err) {
+    console.warn("[Meta Pixel] Event tracking failed:", err);
+  }
+}
+
+export function metaSetUser(userData: { em?: string; ph?: string; fn?: string; ln?: string }) {
+  if (typeof window === "undefined" || !window.fbq || !isMarketingAllowed()) return;
+  try {
+    window.fbq("setUserProperties", userData);
+  } catch {
+    // fallback
+  }
+}

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FALLBACK_PRODUCTS } from "@/lib/catalog";
 
-const BASE_URL = "https://teenliwa.ae";
+const BASE_URL = "https://teenliwa.com";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {

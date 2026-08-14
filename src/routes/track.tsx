@@ -115,9 +115,25 @@ function Track() {
                 </div>
               ))}
             </div>
-            <div className="mt-3 flex justify-between border-t border-border/60 pt-3 font-bold">
-              <span>الإجمالي</span>
-              <span className="text-primary">{order.total.toFixed(2)} {CURRENCY}</span>
+            <div className="mt-3 space-y-1.5 border-t border-border/60 pt-3 text-sm">
+              <div className="flex justify-between text-muted-foreground">
+                <span>المجموع الفرعي</span>
+                <span>{order.subtotal?.toFixed(2) || (order.total - order.deliveryFee).toFixed(2)} {CURRENCY}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>رسوم التوصيل ({order.emirate})</span>
+                <span>{order.deliveryFee?.toFixed(2) || "0.00"} {CURRENCY}</span>
+              </div>
+              {order.tax && order.tax > 0 ? (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>ضريبة القيمة المضافة {order.taxRate ? `(${order.taxRate}%)` : ""}</span>
+                  <span>{order.tax.toFixed(2)} {CURRENCY}</span>
+                </div>
+              ) : null}
+              <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold">
+                <span>الإجمالي</span>
+                <span className="text-primary">{order.total.toFixed(2)} {CURRENCY}</span>
+              </div>
             </div>
           </div>
         </div>

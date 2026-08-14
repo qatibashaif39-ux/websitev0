@@ -4,6 +4,7 @@ export interface D1Customer {
   id: string;
   fname: string;
   lname: string;
+  email?: string;
   phone: string;
   address: string;
   emirate: string;
@@ -16,6 +17,7 @@ export interface D1Customer {
 export interface SaveCustomerInput {
   fname: string;
   lname: string;
+  email?: string;
   phone: string;
   address: string;
   emirate: string;
@@ -44,6 +46,7 @@ export function saveD1CustomerLocally(customer: D1Customer) {
     const existing = list[index];
     list[index] = {
       ...existing,
+      email: customer.email || existing.email,
       address: customer.address || existing.address,
       emirate: customer.emirate || existing.emirate,
       totalOrders: existing.totalOrders + 1,
@@ -111,6 +114,7 @@ export const d1 = {
   async saveCustomerData(input: SaveCustomerInput): Promise<D1Customer> {
     const fname = input.fname.trim();
     const lname = input.lname.trim();
+    const email = input.email?.trim() || undefined;
     const phone = input.phone.trim();
     const amount = Number(input.amount || 0);
 
@@ -118,6 +122,7 @@ export const d1 = {
       id: `cust_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       fname,
       lname,
+      email,
       phone,
       address: input.address.trim(),
       emirate: input.emirate.trim(),
@@ -132,10 +137,10 @@ export const d1 = {
 
     // Try executing D1 SQL if Cloudflare API configured
     executeD1Query(
-      `INSERT INTO customers (id, fname, lname, phone, address, emirate, total_orders, total_spent, last_order_tracking)
-       VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)
-       ON CONFLICT(phone) DO UPDATE SET address=excluded.address, emirate=excluded.emirate, total_orders=total_orders+1, total_spent=total_spent+excluded.total_spent;`,
-      [customerRecord.id, fname, lname, phone, customerRecord.address, customerRecord.emirate, amount, input.tracking || ""]
+      `INSERT INTO customers (id, fname, lname, email, phone, address, emirate, total_orders, total_spent, last_order_tracking)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+       ON CONFLICT(phone) DO UPDATE SET email=excluded.email, address=excluded.address, emirate=excluded.emirate, total_orders=total_orders+1, total_spent=total_spent+excluded.total_spent;`,
+      [customerRecord.id, fname, lname, email || "", phone, customerRecord.address, customerRecord.emirate, amount, input.tracking || ""]
     ).catch(() => {});
 
     return customerRecord;

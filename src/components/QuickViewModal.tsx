@@ -21,6 +21,7 @@ export function QuickViewModal({ product, isOpen, onClose, onOpenShare }: QuickV
   const { add } = useCart();
   const { t } = useLanguage();
   const minQty = product?.minimum_order_quantity ?? 1;
+  const maxQty = product?.maximum_order_quantity ?? null;
   const [qty, setQty] = useState(minQty);
   const [shareOpen, setShareOpen] = useState(false);
   const [reviewsSummary, setReviewsSummary] = useState({ average: 5, total: 0 });
@@ -143,11 +144,21 @@ export function QuickViewModal({ product, isOpen, onClose, onOpenShare }: QuickV
                 {/* Actions: Quantity & Add to Cart */}
                 <div className="mt-6 pt-6 border-t border-border/60 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-foreground">الكمية المطلوبة:</span>
+                    <div>
+                      <span className="text-sm font-bold text-foreground">الكمية المطلوبة:</span>
+                      {(minQty > 1 || maxQty) && (
+                        <p className="text-[11px] text-muted-foreground font-medium">
+                          {minQty > 1 ? `أقل كمية: ${minQty}` : ""}
+                          {minQty > 1 && maxQty ? " | " : ""}
+                          {maxQty ? `أقصى كمية: ${maxQty}` : ""}
+                        </p>
+                      )}
+                    </div>
                     <div className="flex items-center gap-3 rounded-full bg-secondary p-1 border border-border/50">
                       <button
-                        onClick={() => setQty((q) => q + 1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                        onClick={() => setQty((q) => (maxQty ? Math.min(maxQty, q + 1) : q + 1))}
+                        disabled={maxQty !== null && qty >= maxQty}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
                         aria-label="زيادة الكمية"
                       >
                         <Plus className="h-4 w-4" />
@@ -155,7 +166,8 @@ export function QuickViewModal({ product, isOpen, onClose, onOpenShare }: QuickV
                       <span className="w-8 text-center text-base font-extrabold">{qty}</span>
                       <button
                         onClick={() => setQty((q) => Math.max(minQty, q - 1))}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                        disabled={qty <= minQty}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
                         aria-label="إنقاص الكمية"
                       >
                         <Minus className="h-4 w-4" />

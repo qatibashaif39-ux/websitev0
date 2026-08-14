@@ -18,6 +18,7 @@ export interface Product {
   category: string;
   available: boolean;
   minimum_order_quantity: number;
+  maximum_order_quantity?: number | null;
 }
 
 // Bundled fallback images for the originally-seeded products (keyed by seed_key).

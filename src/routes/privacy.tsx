@@ -12,10 +12,10 @@ export const Route = createFileRoute("/privacy")({
       { name: "robots", content: "index, follow" },
       { property: "og:title", content: "سياسة الخصوصية — تين ليوا" },
       { property: "og:description", content: "تعرف على سياسات الخصوصية وحماية البيانات وملفات الارتباط لمتجر تين ليوا." },
-      { property: "og:url", content: "https://teenliwa.ae/privacy" },
+      { property: "og:url", content: "https://teenliwa.com/privacy" },
     ],
     links: [
-      { rel: "canonical", href: "https://teenliwa.ae/privacy" },
+      { rel: "canonical", href: "https://teenliwa.com/privacy" },
     ],
   }),
   component: PrivacyPage,

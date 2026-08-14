@@ -83,5 +83,22 @@ export function TikTokPixel() {
 
 export function tiktokTrack(event: string, payload?: Record<string, unknown>) {
   if (typeof window === "undefined" || !window.ttq?.track || !isMarketingAllowed()) return;
-  window.ttq.track(event, payload ?? {});
+  try {
+    window.ttq.track(event, payload ?? {});
+  } catch (err) {
+    console.warn("[TikTok Pixel] Track error:", err);
+  }
+}
+
+export function tiktokIdentify(userData: { email?: string; phone_number?: string; external_id?: string }) {
+  if (typeof window === "undefined" || !window.ttq?.identify || !isMarketingAllowed()) return;
+  try {
+    const clean: Record<string, string> = {};
+    if (userData.email) clean.email = userData.email.trim().toLowerCase();
+    if (userData.phone_number) clean.phone_number = userData.phone_number.trim();
+    if (userData.external_id) clean.external_id = userData.external_id.trim();
+    window.ttq.identify(clean);
+  } catch (err) {
+    console.warn("[TikTok Pixel] Identify error:", err);
+  }
 }

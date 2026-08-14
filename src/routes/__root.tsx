@@ -130,7 +130,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
                     content: "تين أحمر وأصفر طازج عسلي، تمور فاخرة، وفواكه موسمية مع ضمان الجودة والطزاجة."
                 },
                 { property: "og:type", content: "website" },
-                { property: "og:url", content: "https://teenliwa.ae" },
+                { property: "og:url", content: "https://teenliwa.com" },
                 { property: "og:locale", content: "ar_AE" },
                 { property: "og:locale:alternate", content: "en_US" },
                 { property: "og:site_name", content: "تين ليوا — Teen Liwa" },
@@ -142,7 +142,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
                 }
             ],
             links: [
-                { rel: "canonical", href: "https://teenliwa.ae" },
+                { rel: "canonical", href: "https://teenliwa.com" },
                 { rel: "preconnect", href: "https://fonts.googleapis.com" },
                 {
                     rel: "preconnect",

@@ -79,7 +79,8 @@ function OrderDetail() {
           <h2 className="mb-3 font-bold">بيانات المستلم</h2>
           <div className="space-y-1 text-sm">
             <div><span className="text-muted-foreground">الاسم: </span><span className="font-semibold">{order.name}</span></div>
-            <div><span className="text-muted-foreground">الهاتف: </span><span className="font-semibold">{order.phone}</span></div>
+            {order.email && <div><span className="text-muted-foreground">البريد الإلكتروني: </span><span className="font-semibold" dir="ltr">{order.email}</span></div>}
+            <div><span className="text-muted-foreground">الهاتف: </span><span className="font-semibold" dir="ltr">{order.phone}</span></div>
             <div><span className="text-muted-foreground">العنوان: </span><span className="font-semibold">{order.address}</span></div>
             <div><span className="text-muted-foreground">الإمارة: </span><span className="font-semibold">{order.emirate}</span></div>
             <div><span className="text-muted-foreground">تاريخ الطلب: </span><span className="font-semibold">{formatDateTime(order.createdAt)}</span></div>
@@ -116,7 +117,7 @@ function OrderDetail() {
             </div>
           ))}
         </div>
-        <div className="mt-3 space-y-1 border-t border-border/60 pt-3 text-sm">
+        <div className="mt-3 space-y-1.5 border-t border-border/60 pt-3 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>المجموع الفرعي</span>
             <span>{order.subtotal.toFixed(2)} {CURRENCY}</span>
@@ -125,6 +126,12 @@ function OrderDetail() {
             <span>رسوم التوصيل ({order.emirate})</span>
             <span>{order.deliveryFee.toFixed(2)} {CURRENCY}</span>
           </div>
+          {order.tax && order.tax > 0 ? (
+            <div className="flex justify-between text-muted-foreground">
+              <span>ضريبة القيمة المضافة {order.taxRate ? `(${order.taxRate}%)` : ""}</span>
+              <span>{order.tax.toFixed(2)} {CURRENCY}</span>
+            </div>
+          ) : null}
           <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold">
             <span>الإجمالي</span>
             <span className="text-primary">{order.total.toFixed(2)} {CURRENCY}</span>

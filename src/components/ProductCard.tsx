@@ -16,6 +16,7 @@ export function ProductCard({ product, onQuickView, onShare }: ProductCardProps)
   const { add } = useCart();
   const { t } = useLanguage();
   const minQty = product.minimum_order_quantity ?? 1;
+  const maxQty = product.maximum_order_quantity ?? null;
   const [qty, setQty] = useState(minQty);
   const [reviewsSummary, setReviewsSummary] = useState({ average: 5, total: 0 });
 
@@ -96,13 +97,23 @@ export function ProductCard({ product, onQuickView, onShare }: ProductCardProps)
         </p>
 
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-lg font-extrabold text-primary">
-            {product.price} <span className="text-sm">{CURRENCY}</span>
-          </span>
+          <div>
+            <span className="text-lg font-extrabold text-primary">
+              {product.price} <span className="text-sm">{CURRENCY}</span>
+            </span>
+            {(minQty > 1 || maxQty) && (
+              <div className="text-[10px] text-muted-foreground font-medium">
+                {minQty > 1 ? `أقل كمية: ${minQty}` : ""}
+                {minQty > 1 && maxQty ? " | " : ""}
+                {maxQty ? `أقصى كمية: ${maxQty}` : ""}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2 rounded-full bg-secondary p-1">
             <button
-              onClick={() => setQty((q) => q + 1)}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+              onClick={() => setQty((q) => (maxQty ? Math.min(maxQty, q + 1) : q + 1))}
+              disabled={maxQty !== null && qty >= maxQty}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
               aria-label="زيادة"
             >
               <Plus className="h-4 w-4" />
@@ -110,7 +121,8 @@ export function ProductCard({ product, onQuickView, onShare }: ProductCardProps)
             <span className="w-5 text-center text-sm font-bold">{qty}</span>
             <button
               onClick={() => setQty((q) => Math.max(minQty, q - 1))}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+              disabled={qty <= minQty}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
               aria-label="إنقاص"
             >
               <Minus className="h-4 w-4" />

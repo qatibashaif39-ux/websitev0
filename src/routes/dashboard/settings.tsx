@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Save, KeyRound, Info, Globe, Activity, ShoppingCart, Share2 } from "lucide-react";
+import { Loader2, Save, KeyRound, Info, Globe, Activity, ShoppingCart, Share2, Receipt, Percent } from "lucide-react";
 import { toast } from "sonner";
+import { CURRENCY } from "@/data/products";
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: DashboardSettings,
@@ -17,6 +18,9 @@ const KEYS = [
   "tiktok_pixel_id",
   "tiktok_access_token",
   "min_order_qty",
+  "tax_enabled",
+  "tax_rate",
+  "tax_label",
   "social_whatsapp",
   "social_facebook",
   "social_snapchat",
@@ -36,6 +40,9 @@ async function fetchSettings(): Promise<SettingsMap> {
     tiktok_pixel_id: "",
     tiktok_access_token: "",
     min_order_qty: "2",
+    tax_enabled: "false",
+    tax_rate: "5",
+    tax_label: "ضريبة القيمة المضافة (VAT)",
     social_whatsapp: "",
     social_facebook: "",
     social_snapchat: "",
@@ -81,6 +88,9 @@ function DashboardSettings() {
   const [ttToken, setTtToken] = useState("");
   const [showTt, setShowTt] = useState(false);
   const [minQty, setMinQty] = useState("2");
+  const [taxEnabled, setTaxEnabled] = useState(false);
+  const [taxRate, setTaxRate] = useState("5");
+  const [taxLabel, setTaxLabel] = useState("ضريبة القيمة المضافة (VAT)");
   const [whatsapp, setWhatsapp] = useState("");
   const [facebook, setFacebook] = useState("");
   const [snapchat, setSnapchat] = useState("");
@@ -96,6 +106,9 @@ function DashboardSettings() {
       setPixelId(data.tiktok_pixel_id);
       setTtToken(data.tiktok_access_token);
       setMinQty(data.min_order_qty || "2");
+      setTaxEnabled(data.tax_enabled === "true");
+      setTaxRate(data.tax_rate || "5");
+      setTaxLabel(data.tax_label || "ضريبة القيمة المضافة (VAT)");
       setWhatsapp(data.social_whatsapp);
       setFacebook(data.social_facebook);
       setSnapchat(data.social_snapchat);
@@ -114,13 +127,17 @@ function DashboardSettings() {
       await upsertSetting("tiktok_access_token", ttToken.trim());
       const n = Math.max(1, parseInt(minQty, 10) || 1);
       await upsertSetting("min_order_qty", String(n));
+      await upsertSetting("tax_enabled", taxEnabled ? "true" : "false");
+      const r = Math.max(0, parseFloat(taxRate) || 0);
+      await upsertSetting("tax_rate", String(r));
+      await upsertSetting("tax_label", taxLabel.trim() || "ضريبة القيمة المضافة (VAT)");
       await upsertSetting("social_whatsapp", whatsapp.trim());
       await upsertSetting("social_facebook", facebook.trim());
       await upsertSetting("social_snapchat", snapchat.trim());
       await upsertSetting("social_instagram", instagram.trim());
     },
     onSuccess: () => {
-      toast.success("تم حفظ الإعدادات");
+      toast.success("تم حفظ الإعدادات بنجاح");
       qc.invalidateQueries({ queryKey: ["app_settings"] });
     },
     onError: (err) => {
@@ -133,14 +150,89 @@ function DashboardSettings() {
     return <div className="flex min-h-[30vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
 
-  const field = "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
+  const field = "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors";
+  const numTaxRate = Math.max(0, parseFloat(taxRate) || 0);
+  const sampleOrderSubtotal = 100;
+  const sampleTax = taxEnabled ? (sampleOrderSubtotal * (numTaxRate / 100)) : 0;
+  const sampleTotal = sampleOrderSubtotal + sampleTax;
 
   return (
     <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold">الإعدادات</h1>
-        <p className="mt-1 text-sm text-muted-foreground">إدارة بوابة الدفع، الدومين، وتتبع TikTok.</p>
+        <p className="mt-1 text-sm text-muted-foreground">إدارة بوابة الدفع، الضرائب، إعلانات Meta وTikTok، والحدود التشغيلية للمتجر.</p>
       </div>
+
+      {/* Tax and VAT Section */}
+      <section className="rounded-2xl border border-border/60 bg-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Receipt className="h-5 w-5 text-primary" />
+          <h2 className="font-bold">إعدادات الضريبة والقيمة المضافة (Tax & VAT)</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          تحكم في حساب وتطبيق ضريبة القيمة المضافة على طلبات المتجر مع إظهارها بشكل منفصل ومفصل في صفحة الدفع والفاتورة.
+        </p>
+
+        <label className="flex cursor-pointer items-center gap-2.5 text-sm pt-2">
+          <input
+            type="checkbox"
+            checked={taxEnabled}
+            onChange={(e) => setTaxEnabled(e.target.checked)}
+            className="h-4 w-4 rounded accent-primary cursor-pointer"
+          />
+          <span className="font-bold text-foreground">تفعيل احتساب الضريبة في صفحة إتمام الطلب (Enable Tax Calculation)</span>
+        </label>
+
+        {taxEnabled && (
+          <div className="space-y-4 pt-2 border-t border-border/60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block mb-1 text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Percent className="h-3.5 w-3.5 text-primary" /> نسبة الضريبة المئوية (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={taxRate}
+                  onChange={(e) => setTaxRate(e.target.value)}
+                  placeholder="مثال: 5"
+                  className={field}
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-xs font-semibold text-foreground">
+                  مسمى الضريبة بالفاتورة
+                </label>
+                <input
+                  value={taxLabel}
+                  onChange={(e) => setTaxLabel(e.target.value)}
+                  placeholder="ضريبة القيمة المضافة (VAT)"
+                  className={field}
+                />
+              </div>
+            </div>
+
+            {/* Live Calculation Preview */}
+            <div className="rounded-xl bg-secondary/50 p-4 border border-border/40 text-xs space-y-1.5">
+              <div className="font-bold text-foreground mb-1">معاينة مباشرة لتطبيق الضريبة:</div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>طلب تجريبي بقيمة:</span>
+                <span>{sampleOrderSubtotal.toFixed(2)} {CURRENCY}</span>
+              </div>
+              <div className="flex justify-between text-primary font-semibold">
+                <span>{taxLabel} ({numTaxRate}%):</span>
+                <span>+{sampleTax.toFixed(2)} {CURRENCY}</span>
+              </div>
+              <div className="flex justify-between border-t border-border/40 pt-1.5 font-bold text-foreground">
+                <span>الإجمالي المحتسب للعميل:</span>
+                <span>{sampleTotal.toFixed(2)} {CURRENCY}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <div className="flex items-center gap-2">
@@ -200,7 +292,7 @@ function DashboardSettings() {
           <h2 className="font-bold">تتبع Meta Ads Pixel (Facebook & Instagram)</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          معرّف بكسل فيسبوك لتتبع الزيارات والتحويلات (PageView, InitiateCheckout, Purchase).
+          معرّف بكسل فيسبوك لتتبع الزيارات، إضافة للسلة، وبدء وإتمام الطلب (PageView, AddToCart, InitiateCheckout, Purchase).
         </p>
 
         <label className="mt-4 block text-sm font-semibold">Meta Pixel ID</label>
@@ -214,7 +306,7 @@ function DashboardSettings() {
           spellCheck={false}
         />
 
-        <label className="mt-4 block text-sm font-semibold">Meta Conversions API Token (اخشياري)</label>
+        <label className="mt-4 block text-sm font-semibold">Meta Conversions API Token (اختياري)</label>
         <div className="mt-2 flex gap-2">
           <input
             dir="ltr"
@@ -235,10 +327,10 @@ function DashboardSettings() {
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <div className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" />
-          <h2 className="font-bold">تتبع TikTok</h2>
+          <h2 className="font-bold">تتبع إعلانات TikTok (TikTok Ads Pixel)</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          بكسل TikTok يعمل في المتصفح، وAccess Token لإرسال أحداث Events API من السيرفر (Purchase).
+          بكسل TikTok يعمل في المتصفح مع Advanced Matching لربط الهواتف والبريد الإلكتروني وأحداث InitiateCheckout و CompletePayment.
         </p>
 
         <label className="mt-4 block text-sm font-semibold">TikTok Pixel ID</label>
@@ -252,7 +344,7 @@ function DashboardSettings() {
           spellCheck={false}
         />
 
-        <label className="mt-4 block text-sm font-semibold">TikTok Events API Access Token</label>
+        <label className="mt-4 block text-sm font-semibold">TikTok Events API Access Token (اختياري)</label>
         <div className="mt-2 flex gap-2">
           <input
             dir="ltr"
@@ -273,7 +365,7 @@ function DashboardSettings() {
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-5 w-5 text-primary" />
-          <h2 className="font-bold">الحد الأدنى للطلب</h2>
+          <h2 className="font-bold">الحد الأدنى للطلب العام</h2>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           أقل كمية إجمالية مسموح بها لتسجيل الطلب. مثال: عند ضبطه على 2، لن يُقبل طلب بكمية إجمالية أقل من 2.
@@ -288,7 +380,6 @@ function DashboardSettings() {
           className={`${field} mt-2 w-32`}
         />
       </section>
-
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <div className="flex items-center gap-2">
@@ -347,7 +438,7 @@ function DashboardSettings() {
       <button
         onClick={() => save.mutate()}
         disabled={save.isPending}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-sm"
       >
         {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
         حفظ الإعدادات

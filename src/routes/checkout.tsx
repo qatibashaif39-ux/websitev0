@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Loader2, PhoneCall } from "lucide-react";
+import { CheckCircle2, Loader2, PhoneCall, Mail, User, MapPin, Receipt, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { CURRENCY } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { createOrder } from "@/lib/orders";
 import { EMIRATES, EMIRATE_DELIVERY_FEE } from "@/lib/emirates";
-import { getAppSetting } from "@/lib/settings";
+import { getAppSetting, getTaxConfig } from "@/lib/settings";
 import { d1 } from "@/lib/d1";
+import { metaTrack, metaSetUser } from "@/components/MetaPixel";
+import { tiktokTrack, tiktokIdentify } from "@/components/TikTokPixel";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -18,6 +20,21 @@ export const Route = createFileRoute("/checkout")({
   }),
   component: Checkout,
 });
+
+export function validateEmail(email: string): { valid: boolean; message?: string } {
+  const cleaned = email.trim();
+  if (!cleaned) {
+    return { valid: false, message: "الرجاء إدخال البريد الإلكتروني" };
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(cleaned)) {
+    return {
+      valid: false,
+      message: "البريد الإلكتروني غير صحيح (مثال: name@example.com)",
+    };
+  }
+  return { valid: true };
+}
 
 export function validatePhoneNumber(phone: string): { valid: boolean; message?: string } {
   const cleaned = phone.trim().replace(/[\s\-\(\)]/g, "");
@@ -42,16 +59,25 @@ function Checkout() {
   const [tracking, setTracking] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [form, setForm] = useState({
     fname: "",
     lname: "",
+    email: "",
     phone: "",
     address: "",
     emirate: "",
   });
 
+  const taxConfig = useMemo(() => getTaxConfig(), []);
   const deliveryFee = form.emirate ? EMIRATE_DELIVERY_FEE : 0;
-  const grandTotal = useMemo(() => total + deliveryFee, [total, deliveryFee]);
+  
+  const taxAmount = useMemo(() => {
+    if (!taxConfig.enabled || taxConfig.rate <= 0) return 0;
+    return Number(((total * taxConfig.rate) / 100).toFixed(2));
+  }, [total, taxConfig]);
+
+  const grandTotal = useMemo(() => total + deliveryFee + taxAmount, [total, deliveryFee, taxAmount]);
   const totalQty = useMemo(() => items.reduce((s, i) => s + i.qty, 0), [items]);
   const [minQty, setMinQty] = useState(2);
 
@@ -62,20 +88,35 @@ function Checkout() {
       if (!isNaN(n) && n > 0) setMinQty(n);
     }
 
-    // Trigger Meta Pixel InitiateCheckout event
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      try {
-        (window as any).fbq("track", "InitiateCheckout", {
-          content_type: "product",
-          value: total,
-          currency: "AED",
-          num_items: totalQty,
-        });
-      } catch (err) {
-        console.warn("[Meta Pixel] InitiateCheckout track error:", err);
-      }
+    if (items.length > 0) {
+      // Trigger Meta Pixel InitiateCheckout event
+      metaTrack("InitiateCheckout", {
+        content_type: "product",
+        value: total,
+        currency: "AED",
+        num_items: totalQty,
+        content_ids: items.map((i) => i.product.id),
+        contents: items.map((i) => ({
+          id: i.product.id,
+          name: i.product.name,
+          quantity: i.qty,
+          item_price: i.product.price,
+        })),
+      });
+
+      // Trigger TikTok Pixel InitiateCheckout event
+      tiktokTrack("InitiateCheckout", {
+        contents: items.map((i) => ({
+          content_id: i.product.id,
+          content_name: i.product.name,
+          quantity: i.qty,
+          price: i.product.price,
+        })),
+        value: total,
+        currency: "AED",
+      });
     }
-  }, [total, totalQty]);
+  }, [items, total, totalQty]);
 
   const belowItems = useMemo(
     () => items.filter((i) => i.qty < (i.product.minimum_order_quantity ?? 1)),
@@ -87,6 +128,26 @@ function Checkout() {
     if (phoneError) setPhoneError(null);
   };
 
+  const handleEmailChange = (val: string) => {
+    setForm((prev) => ({ ...prev, email: val }));
+    if (emailError) setEmailError(null);
+  };
+
+  const handleBlurUserIdentification = () => {
+    if (form.email || form.phone) {
+      tiktokIdentify({
+        email: form.email,
+        phone_number: form.phone,
+      });
+      metaSetUser({
+        em: form.email,
+        ph: form.phone,
+        fn: form.fname,
+        ln: form.lname,
+      });
+    }
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.fname.trim()) {
@@ -95,6 +156,13 @@ function Checkout() {
     }
     if (!form.lname.trim()) {
       toast.error("الرجاء إدخال اسم العائلة");
+      return;
+    }
+
+    const emailCheck = validateEmail(form.email);
+    if (!emailCheck.valid) {
+      setEmailError(emailCheck.message || "البريد الإلكتروني غير صحيح");
+      toast.error(emailCheck.message || "البريد الإلكتروني غير صحيح");
       return;
     }
 
@@ -122,47 +190,73 @@ function Checkout() {
     setSubmitting(true);
     const fullName = `${form.fname.trim()} ${form.lname.trim()}`;
 
+    // Advanced match for pixels
+    handleBlurUserIdentification();
+
     try {
       const order = await createOrder({
         name: fullName,
+        email: form.email.trim(),
         phone: form.phone.trim(),
         address: form.address,
         emirate: form.emirate,
         items,
         subtotal: total,
         deliveryFee,
+        tax: taxAmount,
+        taxRate: taxConfig.enabled ? taxConfig.rate : undefined,
         total: grandTotal,
       });
 
-      // Save Customer Data to Cloudflare D1
-      try {
-        await d1.saveCustomerData({
-          fname: form.fname,
-          lname: form.lname,
-          phone: form.phone,
-          address: form.address,
-          emirate: form.emirate,
-          orderId: order.id,
-          tracking: order.tracking,
-          amount: grandTotal,
-        });
-      } catch (d1Err) {
-        console.warn("[Cloudflare D1] Save customer error:", d1Err);
-      }
+      // Track Meta & TikTok Ads Purchase and Payment Events
+      metaTrack("AddPaymentInfo", {
+        value: grandTotal,
+        currency: "AED",
+        content_ids: items.map((i) => i.product.id),
+      });
 
-      // Track Meta Ads Pixel Purchase Event
-      if (typeof window !== "undefined" && (window as any).fbq) {
-        try {
-          (window as any).fbq("track", "Purchase", {
-            content_type: "product",
-            value: grandTotal,
-            currency: "AED",
-            order_id: order.tracking,
-          });
-        } catch (fbqErr) {
-          console.warn("[Meta Pixel] Purchase track error:", fbqErr);
-        }
-      }
+      metaTrack("Purchase", {
+        content_type: "product",
+        value: grandTotal,
+        currency: "AED",
+        num_items: totalQty,
+        order_id: order.tracking,
+        contents: items.map((i) => ({
+          id: i.product.id,
+          name: i.product.name,
+          quantity: i.qty,
+          item_price: i.product.price,
+        })),
+      });
+
+      tiktokTrack("AddPaymentInfo", {
+        value: grandTotal,
+        currency: "AED",
+      });
+
+      tiktokTrack("PlaceAnOrder", {
+        content_id: order.tracking,
+        value: grandTotal,
+        currency: "AED",
+        contents: items.map((i) => ({
+          content_id: i.product.id,
+          content_name: i.product.name,
+          quantity: i.qty,
+          price: i.product.price,
+        })),
+      });
+
+      tiktokTrack("CompletePayment", {
+        content_id: order.tracking,
+        value: grandTotal,
+        currency: "AED",
+        contents: items.map((i) => ({
+          content_id: i.product.id,
+          content_name: i.product.name,
+          quantity: i.qty,
+          price: i.product.price,
+        })),
+      });
 
       // Create Ziina payment session or finish order
       try {
@@ -174,6 +268,7 @@ function Checkout() {
             tracking: order.tracking,
             amount: grandTotal,
             customerName: fullName,
+            customerEmail: form.email.trim(),
             origin: window.location.origin,
           }),
         });
@@ -212,7 +307,9 @@ function Checkout() {
         <div className="mt-6 w-full rounded-2xl border border-border/60 bg-card p-4">
           <span className="text-sm text-muted-foreground">رقم التتبع الخاص بك</span>
           <div className="mt-1 text-xl font-extrabold tracking-wider text-primary">{tracking}</div>
-          <div className="mt-2 text-xs text-emerald-500 font-semibold">✓ تم حفظ بيانات العميل في Cloudflare D1</div>
+          <div className="mt-2 text-xs text-emerald-600 font-semibold flex items-center justify-center gap-1">
+            <ShieldCheck className="h-4 w-4" /> تم توثيق وحفظ بيانات الطلب بنجاح
+          </div>
         </div>
         <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
           <Link to="/track" search={{ code: tracking }} className="flex-1 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
@@ -237,55 +334,90 @@ function Checkout() {
     );
   }
 
-  const field = "w-full rounded-xl border border-border bg-secondary px-4 py-3 text-sm outline-none focus:border-primary";
+  const field = "w-full rounded-xl border border-border bg-secondary px-4 py-3 text-sm outline-none focus:border-primary transition-all";
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-2xl font-extrabold">تسجيل الطلب</h1>
-      <p className="mt-1 text-sm text-muted-foreground">سيتم تحويلك إلى بوابة الدفع <span className="font-bold">Ziina</span> بعد تأكيد البيانات.</p>
+      <p className="mt-1 text-sm text-muted-foreground">سيتم تحويلك إلى بوابة الدفع <span className="font-bold text-foreground">Ziina</span> بعد تأكيد البيانات.</p>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <form onSubmit={submit} className="space-y-3">
+        <form onSubmit={submit} className="space-y-3.5">
           {/* First Name & Last Name Fields */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block mb-1 text-xs font-semibold text-muted-foreground">الاسم الأول (First Name)</label>
+              <label className="block mb-1 text-xs font-bold text-foreground flex items-center gap-1">
+                <User className="h-3.5 w-3.5 text-primary" /> الاسم الأول (First Name) *
+              </label>
               <input
                 required
                 placeholder="علي"
                 value={form.fname}
                 onChange={(e) => setForm({ ...form, fname: e.target.value })}
+                onBlur={handleBlurUserIdentification}
                 className={field}
                 maxLength={50}
               />
             </div>
             <div>
-              <label className="block mb-1 text-xs font-semibold text-muted-foreground">اسم العائلة (Last Name)</label>
+              <label className="block mb-1 text-xs font-bold text-foreground flex items-center gap-1">
+                <User className="h-3.5 w-3.5 text-primary" /> اسم العائلة (Last Name) *
+              </label>
               <input
                 required
                 placeholder="المنصوري"
                 value={form.lname}
                 onChange={(e) => setForm({ ...form, lname: e.target.value })}
+                onBlur={handleBlurUserIdentification}
                 className={field}
                 maxLength={50}
               />
             </div>
           </div>
 
+          {/* Email Address Field */}
+          <div>
+            <label className="block mb-1 text-xs font-bold text-foreground flex items-center gap-1">
+              <Mail className="h-3.5 w-3.5 text-primary" /> البريد الإلكتروني (Email) *
+            </label>
+            <div className="relative">
+              <input
+                required
+                type="email"
+                dir="ltr"
+                placeholder="name@example.com"
+                value={form.email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                onBlur={handleBlurUserIdentification}
+                className={`${field} ${emailError ? "border-destructive bg-destructive/5" : ""}`}
+                maxLength={100}
+              />
+              <Mail className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+            </div>
+            {emailError && (
+              <p className="mt-1 text-xs font-semibold text-destructive">{emailError}</p>
+            )}
+            <p className="mt-1 text-[11px] text-muted-foreground">سنرسل لك تفاصيل الفاتورة ورابط التتبع عبر البريد.</p>
+          </div>
+
           {/* Phone Field with Validation Feedback */}
           <div>
-            <label className="block mb-1 text-xs font-semibold text-muted-foreground">رقم الهاتف (مع الرمز الدولي أو المحلي)</label>
+            <label className="block mb-1 text-xs font-bold text-foreground flex items-center gap-1">
+              <PhoneCall className="h-3.5 w-3.5 text-primary" /> رقم الهاتف (Phone Number) *
+            </label>
             <div className="relative">
               <input
                 required
                 type="tel"
+                dir="ltr"
                 placeholder="0501234567 أو +971501234567"
                 value={form.phone}
                 onChange={(e) => handlePhoneChange(e.target.value)}
+                onBlur={handleBlurUserIdentification}
                 className={`${field} ${phoneError ? "border-destructive bg-destructive/5" : ""}`}
                 maxLength={20}
               />
-              <PhoneCall className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
+              <PhoneCall className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
             </div>
             {phoneError && (
               <p className="mt-1 text-xs font-semibold text-destructive">{phoneError}</p>
@@ -294,10 +426,12 @@ function Checkout() {
 
           {/* Address */}
           <div>
-            <label className="block mb-1 text-xs font-semibold text-muted-foreground">عنوان التوصيل التفصيلي</label>
+            <label className="block mb-1 text-xs font-bold text-foreground flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5 text-primary" /> عنوان التوصيل التفصيلي *
+            </label>
             <textarea
               required
-              placeholder="العنوان (الشارع، اسم المنطقة، المبنى، رقم الشقة...)"
+              placeholder="العنوان (الشارع، اسم المنطقة، المبنى، رقم الشقة أو الفيلا...)"
               rows={3}
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
@@ -308,7 +442,7 @@ function Checkout() {
 
           {/* Emirate */}
           <div>
-            <label className="block mb-1 text-xs font-semibold text-muted-foreground">الإمارة</label>
+            <label className="block mb-1 text-xs font-bold text-foreground">الإمارة *</label>
             <select
               required
               value={form.emirate}
@@ -341,39 +475,67 @@ function Checkout() {
           <button
             type="submit"
             disabled={submitting || totalQty < minQty || belowItems.length > 0}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-sm"
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {submitting ? "جارٍ تجهيز الدفع..." : `الدفع عبر Ziina — ${grandTotal.toFixed(2)} ${CURRENCY}`}
           </button>
         </form>
 
-        <div className="h-fit rounded-2xl border border-border/60 bg-card p-4">
-          <h2 className="mb-3 font-bold">ملخص الطلب</h2>
-          <div className="space-y-2">
+        <div className="h-fit rounded-2xl border border-border/60 bg-card p-5 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 border-b border-border/60 pb-3">
+            <Receipt className="h-4 w-4 text-primary" />
+            <h2 className="font-bold text-foreground">ملخص الطلب</h2>
+          </div>
+          
+          <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
             {items.map((i) => (
-              <div key={i.product.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{i.product.name} × {i.qty}</span>
-                <span className="font-semibold">{i.product.price * i.qty} {CURRENCY}</span>
+              <div key={i.product.id} className="flex justify-between items-center text-sm">
+                <div>
+                  <span className="font-medium text-foreground">{i.product.name}</span>
+                  <span className="text-xs text-muted-foreground mr-1">× {i.qty}</span>
+                </div>
+                <span className="font-semibold text-foreground">{(i.product.price * i.qty).toFixed(2)} {CURRENCY}</span>
               </div>
             ))}
           </div>
-          <div className="mt-3 space-y-2 border-t border-border/60 pt-3 text-sm">
+
+          <div className="space-y-2 border-t border-border/60 pt-3 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>المجموع الفرعي</span>
-              <span>{total.toFixed(2)} {CURRENCY}</span>
+              <span>المجموع الفرعي (Subtotal)</span>
+              <span className="font-medium text-foreground">{total.toFixed(2)} {CURRENCY}</span>
             </div>
+            
             <div className="flex justify-between text-muted-foreground">
               <span>رسوم التوصيل{form.emirate ? ` (${form.emirate})` : ""}</span>
-              <span>{form.emirate ? `${deliveryFee.toFixed(2)} ${CURRENCY}` : "—"}</span>
+              <span className="font-medium text-foreground">{form.emirate ? `${deliveryFee.toFixed(2)} ${CURRENCY}` : "—"}</span>
             </div>
-            <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold">
-              <span>الإجمالي</span>
-              <span className="text-primary">{grandTotal.toFixed(2)} {CURRENCY}</span>
+
+            {taxConfig.enabled && taxConfig.rate > 0 && (
+              <div className="flex justify-between text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <span>{taxConfig.label}</span>
+                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-bold text-foreground">
+                    %{taxConfig.rate}
+                  </span>
+                </span>
+                <span className="font-medium text-foreground">{taxAmount.toFixed(2)} {CURRENCY}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between border-t border-border/60 pt-3 text-base font-extrabold">
+              <span className="text-foreground">الإجمالي النهائي</span>
+              <span className="text-primary text-lg">{grandTotal.toFixed(2)} {CURRENCY}</span>
             </div>
+          </div>
+
+          <div className="rounded-xl bg-secondary/60 p-3 text-xs text-muted-foreground flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+            <span>مدفوعات مشفرة وآمنة بنسبة 100% عبر Ziina Payment Gateway.</span>
           </div>
         </div>
       </div>
     </main>
   );
 }
+

@@ -53,11 +53,32 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                     {item.product.price * item.qty} {CURRENCY}
                   </span>
                   <div className="mt-auto flex items-center gap-2 self-start rounded-full bg-background p-1">
-                    <button onClick={() => setQty(item.product.id, item.qty + 1)} className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground" aria-label="زيادة">
+                    <button
+                      onClick={() => {
+                        const max = item.product.maximum_order_quantity;
+                        if (!max || item.qty < max) {
+                          setQty(item.product.id, item.qty + 1);
+                        }
+                      }}
+                      disabled={!!item.product.maximum_order_quantity && item.qty >= item.product.maximum_order_quantity}
+                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-foreground"
+                      aria-label="زيادة"
+                    >
                       <Plus className="h-3.5 w-3.5" />
                     </button>
                     <span className="w-5 text-center text-xs font-bold">{item.qty}</span>
-                    <button onClick={() => setQty(item.product.id, item.qty - 1)} className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground" aria-label="إنقاص">
+                    <button
+                      onClick={() => {
+                        const min = item.product.minimum_order_quantity || 1;
+                        if (item.qty <= min) {
+                          remove(item.product.id);
+                        } else {
+                          setQty(item.product.id, item.qty - 1);
+                        }
+                      }}
+                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground"
+                      aria-label="إنقاص"
+                    >
                       <Minus className="h-3.5 w-3.5" />
                     </button>
                   </div>

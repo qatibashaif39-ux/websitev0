@@ -9,6 +9,9 @@ export interface AppSettings {
   tiktok_pixel_id: string;
   tiktok_access_token: string;
   min_order_qty: string;
+  tax_enabled: string;
+  tax_rate: string;
+  tax_label: string;
   social_whatsapp: string;
   social_facebook: string;
   social_snapchat: string;
@@ -24,11 +27,28 @@ export const DEFAULT_SETTINGS: AppSettings = {
   tiktok_pixel_id: "",
   tiktok_access_token: "",
   min_order_qty: "2",
+  tax_enabled: "false",
+  tax_rate: "5",
+  tax_label: "ضريبة القيمة المضافة (VAT)",
   social_whatsapp: "",
   social_facebook: "",
   social_snapchat: "",
   social_instagram: "",
 };
+
+export interface TaxConfig {
+  enabled: boolean;
+  rate: number;
+  label: string;
+}
+
+export function getTaxConfig(): TaxConfig {
+  const settings = getAppSettings();
+  const enabled = settings.tax_enabled === "true";
+  const rate = Math.max(0, parseFloat(settings.tax_rate) || 0);
+  const label = settings.tax_label?.trim() || "ضريبة القيمة المضافة (VAT)";
+  return { enabled, rate, label };
+}
 
 export function getAppSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;

@@ -28,7 +28,8 @@ const empty: ProductInput = {
     available: true,
     category_id: null,
     sort_order: 0,
-    minimum_order_quantity: 1
+    minimum_order_quantity: 1,
+    maximum_order_quantity: null
 };
 
 
@@ -125,8 +126,18 @@ function DashboardProducts() {
                                 <div className="mt-0.5 text-xs text-muted-foreground">
                                     {p.category || "بدون صنف"}
                                 </div>
-                                <div className="mt-1 text-sm font-semibold text-primary">
-                                    {p.price} {CURRENCY}
+                                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                                    <span className="text-sm font-black text-primary">
+                                        {p.price} {CURRENCY}
+                                    </span>
+                                    <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                                        أقل طلب: {p.minimum_order_quantity ?? 1}
+                                    </span>
+                                    {p.maximum_order_quantity && (
+                                        <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                                            أقصى طلب: {p.maximum_order_quantity}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex shrink-0 flex-col items-end gap-2">
@@ -282,88 +293,127 @@ function ProductForm({
                     }}
                     className="mt-4 space-y-3"
                 >
-                    <input
-                        className={field}
-                        placeholder="اسم المنتج"
-                        required
-                        value={form.name}
-                        onChange={e =>
-                            setForm({ ...form, name: e.target.value })
-                        }
-                    />
-                    <textarea
-                        className={field}
-                        placeholder="الوصف"
-                        rows={3}
-                        value={form.description}
-                        onChange={e =>
-                            setForm({ ...form, description: e.target.value })
-                        }
-                    />
-                    <div className="flex gap-2">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-foreground">اسم المنتج *</label>
                         <input
                             className={field}
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            placeholder="السعر"
+                            placeholder="مثال: تين أحمر ملكي (صندوق 1 كجم)"
                             required
-                            value={form.price}
+                            value={form.name}
                             onChange={e =>
-                                setForm({
-                                    ...form,
-                                    price: Number(e.target.value)
-                                })
-                            }
-                        />
-
-                        <input
-                            className={field}
-                            type="number"
-                            min={1}
-                            step={1}
-                            placeholder="اقل كمية طلب"
-                            value={form.minimum_order_quantity}
-                            onChange={e =>
-                                setForm({
-                                    ...form,
-                                    minimum_order_quantity: Number(
-                                        e.target.value
-                                    )
-                                })
-                            }
-                        />
-
-                        <input
-                            className={field}
-                            type="number"
-                            placeholder="الترتيب"
-                            value={form.sort_order}
-                            onChange={e =>
-                                setForm({
-                                    ...form,
-                                    sort_order: Number(e.target.value)
-                                })
+                                setForm({ ...form, name: e.target.value })
                             }
                         />
                     </div>
-                    <select
-                        className={field}
-                        value={form.category_id ?? ""}
-                        onChange={e =>
-                            setForm({
-                                ...form,
-                                category_id: e.target.value || null
-                            })
-                        }
-                    >
-                        <option value="">بدون صنف</option>
-                        {categories.map(c => (
-                            <option key={c.id} value={c.id}>
-                                {c.name}
-                            </option>
-                        ))}
-                    </select>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-foreground">وصف المنتج</label>
+                        <textarea
+                            className={field}
+                            placeholder="وصف تفصيلي عن جودة المنتج ومصدره وفوائده..."
+                            rows={3}
+                            value={form.description}
+                            onChange={e =>
+                                setForm({ ...form, description: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-foreground">السعر ({CURRENCY}) *</label>
+                            <input
+                                className={field}
+                                type="number"
+                                min={0}
+                                step={0.01}
+                                placeholder="0.00"
+                                required
+                                value={form.price || ""}
+                                onChange={e =>
+                                    setForm({
+                                        ...form,
+                                        price: Number(e.target.value)
+                                    })
+                                }
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-foreground">أقل كمية طلب (Min)</label>
+                            <input
+                                className={field}
+                                type="number"
+                                min={1}
+                                step={1}
+                                placeholder="1"
+                                value={form.minimum_order_quantity}
+                                onChange={e =>
+                                    setForm({
+                                        ...form,
+                                        minimum_order_quantity: Math.max(1, Number(e.target.value))
+                                    })
+                                }
+                            />
+                        </div>
+
+                        <div className="space-y-1.5 col-span-2 sm:col-span-1">
+                            <label className="text-xs font-bold text-foreground">أقصى كمية طلب (Max)</label>
+                            <input
+                                className={field}
+                                type="number"
+                                min={form.minimum_order_quantity || 1}
+                                step={1}
+                                placeholder="غير محدد (اختياري)"
+                                value={form.maximum_order_quantity ?? ""}
+                                onChange={e =>
+                                    setForm({
+                                        ...form,
+                                        maximum_order_quantity: e.target.value ? Number(e.target.value) : null
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-foreground">التصنيف</label>
+                            <select
+                                className={field}
+                                value={form.category_id ?? ""}
+                                onChange={e =>
+                                    setForm({
+                                        ...form,
+                                        category_id: e.target.value || null
+                                    })
+                                }
+                            >
+                                <option value="">بدون صنف</option>
+                                {categories.map(c => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-foreground">ترتيب العرض</label>
+                            <input
+                                className={field}
+                                type="number"
+                                placeholder="1, 2, 3..."
+                                value={form.sort_order}
+                                onChange={e =>
+                                    setForm({
+                                        ...form,
+                                        sort_order: Number(e.target.value)
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
                     <div className="space-y-2">
                         {form.image_url && (
                             <img

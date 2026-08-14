@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { getAllOrders } from "@/lib/orders";
 import { fetchProducts, fetchCategories } from "@/lib/catalog";
+import { getD1Customers } from "@/lib/d1";
 
 export const Route = createFileRoute("/dashboard/database")({
   component: DashboardDatabasePage,
@@ -45,19 +46,39 @@ interface TableDef {
 const D1_TABLES: TableDef[] = [
   {
     name: "orders",
-    description: "جدول الطلبات وتفاصيل الدفع والشحن",
+    description: "جدول الطلبات وتفاصيل الدفع والضرائب والشحن",
     columns: [
       { name: "id", type: "TEXT", pk: true, nullable: false },
       { name: "tracking", type: "TEXT", pk: false, nullable: false },
       { name: "name", type: "TEXT", pk: false, nullable: false },
+      { name: "email", type: "TEXT", pk: false, nullable: true },
       { name: "phone", type: "TEXT", pk: false, nullable: false },
       { name: "address", type: "TEXT", pk: false, nullable: false },
       { name: "emirate", type: "TEXT", pk: false, nullable: false },
       { name: "items", type: "JSON / TEXT", pk: false, nullable: false },
       { name: "subtotal", type: "REAL", pk: false, nullable: false },
       { name: "delivery_fee", type: "REAL", pk: false, nullable: false },
+      { name: "tax", type: "REAL", pk: false, nullable: true },
+      { name: "tax_rate", type: "REAL", pk: false, nullable: true },
       { name: "total", type: "REAL", pk: false, nullable: false },
       { name: "status", type: "TEXT", pk: false, nullable: false },
+      { name: "created_at", type: "TIMESTAMP", pk: false, nullable: false },
+    ],
+  },
+  {
+    name: "customers",
+    description: "سجل بيانات العملاء والبريد والهاتف للتسويق وإعلانات Meta / TikTok",
+    columns: [
+      { name: "id", type: "TEXT", pk: true, nullable: false },
+      { name: "fname", type: "TEXT", pk: false, nullable: false },
+      { name: "lname", type: "TEXT", pk: false, nullable: false },
+      { name: "email", type: "TEXT", pk: false, nullable: true },
+      { name: "phone", type: "TEXT", pk: false, nullable: false },
+      { name: "address", type: "TEXT", pk: false, nullable: false },
+      { name: "emirate", type: "TEXT", pk: false, nullable: false },
+      { name: "total_orders", type: "INTEGER", pk: false, nullable: false },
+      { name: "total_spent", type: "REAL", pk: false, nullable: false },
+      { name: "last_order_tracking", type: "TEXT", pk: false, nullable: true },
       { name: "created_at", type: "TIMESTAMP", pk: false, nullable: false },
     ],
   },
@@ -140,10 +161,26 @@ function DashboardDatabasePage() {
         id: o.id,
         tracking: o.tracking,
         name: o.name,
+        email: o.email || "—",
         phone: o.phone,
         emirate: o.emirate,
+        tax: o.tax ? `${o.tax} AED` : "0.00 AED",
         total: `${o.total} AED`,
         status: o.status,
+      }));
+    }
+    if (selectedTable === "customers") {
+      const customers = getD1Customers();
+      return customers.map((c) => ({
+        id: c.id,
+        fname: c.fname,
+        lname: c.lname,
+        email: c.email || "—",
+        phone: c.phone,
+        emirate: c.emirate,
+        total_orders: c.totalOrders,
+        total_spent: `${c.totalSpent.toFixed(2)} AED`,
+        last_tracking: c.lastOrderTracking || "—",
       }));
     }
     if (selectedTable === "products") {
@@ -166,6 +203,8 @@ function DashboardDatabasePage() {
     return [
       { key: "ziina_api_key", value: "********", updated_at: "2026-08-07" },
       { key: "site_domain", value: "https://teenliwa.com", updated_at: "2026-08-07" },
+      { key: "tax_enabled", value: "false", updated_at: "2026-08-07" },
+      { key: "tax_rate", value: "5%", updated_at: "2026-08-07" },
       { key: "min_order_qty", value: "2", updated_at: "2026-08-07" },
     ];
   }, [selectedTable, orders, products, categories]);

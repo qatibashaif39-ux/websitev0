@@ -20,6 +20,7 @@ export interface ProductRow {
   category: string;
   image: string;
   minimum_order_quantity: number; 
+  maximum_order_quantity?: number | null;
 }
 
 export const FALLBACK_CATEGORIES: Category[] = [
@@ -172,7 +173,8 @@ export function toProduct(row: ProductRow): Product {
     image: row.image || resolveProductImage({ image_url: row.image_url, seed_key: row.seed_key }),
     category: row.category,
     available: row.available,
-    minimum_order_quantity: row.minimum_order_quantity,
+    minimum_order_quantity: row.minimum_order_quantity || 1,
+    maximum_order_quantity: row.maximum_order_quantity ?? null,
   };
 }
 
@@ -184,7 +186,8 @@ export interface ProductInput {
   available: boolean;
   category_id: string | null;
   sort_order: number;
-  minimum_order_quantity: number; 
+  minimum_order_quantity: number;
+  maximum_order_quantity?: number | null;
 }
 
 export async function createProduct(input: ProductInput) {
@@ -204,6 +207,7 @@ export async function createProduct(input: ProductInput) {
     category: cat?.name || "بدون صنف",
     image: input.image_url || resolveProductImage({ seed_key: "red-fig" }),
     minimum_order_quantity: input.minimum_order_quantity || 1,
+    maximum_order_quantity: input.maximum_order_quantity ? Number(input.maximum_order_quantity) : null,
   };
   products.push(newProduct);
   localStorage.setItem(PROD_STORAGE_KEY, JSON.stringify(products));

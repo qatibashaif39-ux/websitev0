@@ -14,12 +14,15 @@ export interface Order {
   id: string;
   tracking: string;
   name: string;
+  email?: string;
   phone: string;
   address: string;
   emirate: string;
   items: OrderItem[];
   subtotal: number;
   deliveryFee: number;
+  tax?: number;
+  taxRate?: number;
   total: number;
   status: OrderStatus;
   createdAt: number;
@@ -77,12 +80,15 @@ export function generateTracking() {
 
 export interface CreateOrderInput {
   name: string;
+  email?: string;
   phone: string;
   address: string;
   emirate: string;
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;
+  tax?: number;
+  taxRate?: number;
   total: number;
 }
 
@@ -116,6 +122,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     id: `ord-${Date.now()}`,
     tracking,
     name: input.name,
+    email: input.email?.trim() || undefined,
     phone: input.phone,
     address: input.address,
     emirate: input.emirate,
@@ -127,6 +134,8 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     })),
     subtotal: input.subtotal,
     deliveryFee: input.deliveryFee,
+    tax: input.tax ?? 0,
+    taxRate: input.taxRate,
     total: input.total,
     status: "pending",
     createdAt: Date.now(),
@@ -139,6 +148,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   d1.saveCustomerData({
     fname: input.name.split(" ")[0] || input.name,
     lname: input.name.split(" ").slice(1).join(" ") || "",
+    email: input.email?.trim() || undefined,
     phone: input.phone,
     address: input.address,
     emirate: input.emirate,

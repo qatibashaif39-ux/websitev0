@@ -137,11 +137,18 @@ export function Footer() {
                     </a>
                 </div>
 
-                <div className="mt-4 border-t border-border/40 pt-4 text-center">
-                    <p className="text-xs text-muted-foreground">
-                        جميع الحقوق محفوظة © {new Date().getFullYear()}{" "}
-                        teenliwa.ae
+                <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-border/40 pt-4 text-center text-xs text-muted-foreground">
+                    <p>
+                        جميع الحقوق محفوظة © 2026 teenliwa.com
                     </p>
+                    <a
+                        href="https://gigatopx.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                    >
+                        <span>gigatopx.com</span>
+                    </a>
                 </div>
             </div>
 
