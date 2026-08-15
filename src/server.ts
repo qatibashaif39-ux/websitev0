@@ -44,18 +44,28 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 }
 
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request, env: any, ctx: any): Promise<Response> {
     try {
       const url = new URL(request.url);
+
+      // Handle Hono API routes
       if (url.pathname.startsWith("/api/")) {
         return await api.fetch(request, env, ctx);
+      }
+
+      // Handle static assets if ASSETS binding exists (Cloudflare Workers Static Assets)
+      if (env?.ASSETS && typeof env.ASSETS.fetch === "function") {
+        const assetResponse = await env.ASSETS.fetch(request);
+        if (assetResponse && (assetResponse.status < 400 || assetResponse.status === 304)) {
+          return assetResponse;
+        }
       }
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
-      console.error(error);
+      console.error("[Cloudflare Worker Server Error]:", error);
       return new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },

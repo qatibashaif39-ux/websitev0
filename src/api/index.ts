@@ -11,7 +11,7 @@ api.use("*", cors());
 api.get("/health", (c) => {
   return c.json({
     status: "ok",
-    runtime: "cloudflare-pages",
+    runtime: "cloudflare-workers",
     timestamp: new Date().toISOString(),
     store: "teenliwa",
   });
@@ -27,9 +27,19 @@ api.post("/create-ziina-payment", async (c) => {
       return c.json({ error: "Missing required fields" }, 400);
     }
 
-    const apiKey = (process.env.ZIINA_API_KEY || process.env.VITE_ZIINA_API_KEY || "").trim();
-    const testMode = (process.env.ZIINA_TEST_MODE || "true").trim() !== "false";
-    const siteDomain = (process.env.SITE_DOMAIN || "").trim().replace(/\/+$/, "");
+    const env = (c.env as Record<string, string> | undefined) || {};
+    const apiKey = (
+      env.ZIINA_API_KEY ||
+      process.env.ZIINA_API_KEY ||
+      env.VITE_ZIINA_API_KEY ||
+      process.env.VITE_ZIINA_API_KEY ||
+      ""
+    ).trim();
+    const testMode =
+      (env.ZIINA_TEST_MODE || process.env.ZIINA_TEST_MODE || "true").trim() !== "false";
+    const siteDomain = (env.SITE_DOMAIN || process.env.SITE_DOMAIN || "")
+      .trim()
+      .replace(/\/+$/, "");
     const baseUrl = siteDomain || origin;
 
     if (!apiKey) {
@@ -89,8 +99,11 @@ api.post("/generate-ad", async (c) => {
       objective = "conversions",
     } = body ?? {};
 
+    const env = (c.env as Record<string, string> | undefined) || {};
+    const geminiKey = (env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || "").trim();
+
     const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: geminiKey,
       httpOptions: {
         headers: {
           "User-Agent": "aistudio-build",

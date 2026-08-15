@@ -51,13 +51,22 @@ try {
   console.log("\nBuilding project...");
   execSync("npm run build", { stdio: "inherit", env: deployEnv });
 
-  console.log("\nDeploying to Cloudflare Pages...");
-  execSync("npx wrangler pages deploy dist --project-name teenliwa", {
+  console.log("\nDeploying to Cloudflare Workers via Wrangler...");
+  execSync("npx wrangler deploy", {
     stdio: "inherit",
     env: deployEnv,
   });
-  console.log("\nDeployment completed successfully!");
+  console.log("\nWorker deployment completed successfully!");
 } catch (error) {
-  console.error("\nDeployment failed:", error.message);
-  process.exit(1);
+  console.log("\nTrying fallback to Cloudflare Pages deploy...");
+  try {
+    execSync("npx wrangler pages deploy dist/client --project-name teenliwa", {
+      stdio: "inherit",
+      env: deployEnv,
+    });
+    console.log("\nPages deployment completed successfully!");
+  } catch (pagesError) {
+    console.error("\nDeployment failed:", error.message || pagesError.message);
+    process.exit(1);
+  }
 }
