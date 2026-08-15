@@ -1,59 +1,23 @@
-import "./lib/error-capture";
-
-import { consumeLastCapturedError } from "./lib/error-capture";
-import { renderErrorPage } from "./lib/error-page";
+import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
 import api from "./api";
+import { renderErrorPage } from "./lib/error-page";
 
-type ServerEntry = {
-  fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
-};
-
-let serverEntryPromise: Promise<ServerEntry> | undefined;
-
-async function getServerEntry(): Promise<ServerEntry> {
-  if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => (m.default ?? m) as ServerEntry,
-    );
-  }
-  return serverEntryPromise;
-}
-
-async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
-  if (
-    !response ||
-    !response.headers ||
-    typeof response.headers.get !== "function" ||
-    response.status < 500
-  ) {
-    return response;
-  }
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) return response;
-
-  const body = await response.clone().text();
-  if (!body.includes('"unhandled":true') || !body.includes('"message":"HTTPError"')) {
-    return response;
-  }
-
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
-  return new Response(renderErrorPage(), {
-    status: 500,
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
-}
+const handler = createStartHandler(defaultStreamHandler);
 
 export default {
   async fetch(request: Request, env: any, ctx: any): Promise<Response> {
     try {
-      const url = new URL(request.url);
+      const host = request.headers?.get?.("host") || "teenliwa.katebashaif.workers.dev";
+      const proto = request.headers?.get?.("x-forwarded-proto") || "https";
+      const origin = `${proto}://${host}`;
+      const url = new URL(request.url, origin);
 
-      // Handle Hono API routes
+      // 1. Handle Hono API routes
       if (url.pathname.startsWith("/api/")) {
         return await api.fetch(request, env, ctx);
       }
 
-      // Handle static assets if ASSETS binding exists (Cloudflare Workers Static Assets)
+      // 2. Handle static assets if ASSETS binding exists
       if (env?.ASSETS && typeof env.ASSETS.fetch === "function") {
         const assetResponse = await env.ASSETS.fetch(request);
         if (assetResponse && (assetResponse.status < 400 || assetResponse.status === 304)) {
@@ -61,12 +25,18 @@ export default {
         }
       }
 
-      const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
-    } catch (error) {
+      // Ensure request has a valid absolute URL for TanStack Start SSR
+      const fullRequest = request.url.startsWith("http")
+        ? request
+        : new Request(new URL(request.url, origin).toString(), request);
+
+      // 3. TanStack Start SSR Handler
+      return await handler(fullRequest);
+    } catch (error: any) {
       console.error("[Cloudflare Worker Server Error]:", error);
-      return new Response(renderErrorPage(), {
+      const isDev = process.env.NODE_ENV !== "production";
+      const errorMsg = isDev ? error?.stack || error?.message || String(error) : undefined;
+      return new Response(renderErrorPage(errorMsg), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
       });

@@ -13,7 +13,7 @@ export default defineConfig({
       server: { entry: "server" },
     }),
     nitro({
-      preset: "cloudflare-pages",
+      preset: "cloudflare-module",
       output: {
         dir: "dist",
         serverDir: "dist/server",
@@ -23,20 +23,14 @@ export default defineConfig({
         nodeCompat: true,
       },
     }),
-    react(),
+    react({
+      jsxRuntime: "automatic",
+    }),
   ],
   resolve: {
     alias: {
       "@": "/src",
     },
-    dedupe: [
-      "react",
-      "react-dom",
-      "react/jsx-runtime",
-      "react/jsx-dev-runtime",
-      "@tanstack/react-query",
-      "@tanstack/query-core",
-    ],
   },
   server: {
     host: "0.0.0.0",

@@ -1,20 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      "User-Agent": "aistudio-build",
-    },
-  },
-});
-
 export const Route = createFileRoute("/api/generate-ad")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
+          const geminiKey = process.env.GEMINI_API_KEY;
+          if (!geminiKey) {
+            return Response.json(
+              { success: false, error: "GEMINI_API_KEY is required" },
+              { status: 400 },
+            );
+          }
+
+          const ai = new GoogleGenAI({
+            apiKey: geminiKey,
+            httpOptions: {
+              headers: {
+                "User-Agent": "aistudio-build",
+              },
+            },
+          });
+
           const body = await request.json();
           const {
             platform = "meta",
