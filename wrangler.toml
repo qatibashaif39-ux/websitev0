@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 # Static Assets binding for Cloudflare Workers
 [assets]
 directory = "./dist/client"
-binding = "ASSETS"
+binding = "Assets"
 not_found_handling = "single-page-application"
 
 [vars]
