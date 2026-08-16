@@ -3,11 +3,13 @@ import { cors } from "hono/cors";
 import { GoogleGenAI, Type } from "@google/genai";
 import { todoApi } from "./todos";
 import { authApi } from "./auth";
+import { orderApi } from "./orders";
 
 export const api = new Hono().basePath("/api");
 
-// Mount Auth & Todo APIs
+// Mount Auth, Orders & Todo APIs
 api.route("/auth", authApi);
+api.route("/orders", orderApi);
 api.route("/todos", todoApi);
 
 // Enable CORS for all API routes

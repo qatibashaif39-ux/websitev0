@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, ShoppingBag, LayoutDashboard, Info } from "lucide-react";
+import { Home, ShoppingBag, Info } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export function BottomNav() {
@@ -24,13 +24,6 @@ export function BottomNav() {
         >
           <ShoppingBag className="h-5 w-5" />
           <span className="text-[10px] font-medium">{t("nav.orders")}</span>
-        </Link>
-        <Link
-          to="/dashboard"
-          className="flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-primary [&.active]:text-primary"
-        >
-          <LayoutDashboard className="h-5 w-5" />
-          <span className="text-[10px] font-medium">{t("nav.dashboard")}</span>
         </Link>
         <a
           href="#about"

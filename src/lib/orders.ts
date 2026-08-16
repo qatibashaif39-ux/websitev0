@@ -118,8 +118,9 @@ function saveLocalOrder(order: Order) {
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const tracking = generateTracking();
+  const orderId = `ord-${Date.now()}`;
   const localOrder: Order = {
-    id: `ord-${Date.now()}`,
+    id: orderId,
     tracking,
     name: input.name,
     email: input.email?.trim() || undefined,
@@ -144,7 +145,42 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   saveLocalOrder(localOrder);
   rememberMyTracking(localOrder.tracking);
 
-  // Sync to Cloudflare D1 customer table
+  // 1. Post to Server API /api/orders to insert in Cloudflare D1 DB
+  try {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: orderId,
+        tracking,
+        name: input.name,
+        email: input.email?.trim() || undefined,
+        phone: input.phone,
+        address: input.address,
+        emirate: input.emirate,
+        items: localOrder.items,
+        subtotal: input.subtotal,
+        deliveryFee: input.deliveryFee,
+        tax: input.tax,
+        taxRate: input.taxRate,
+        total: input.total,
+        status: "pending",
+        paymentMethod: "cod",
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.order) {
+        saveLocalOrder(data.order);
+        return data.order;
+      }
+    }
+  } catch (apiErr) {
+    console.warn("[Orders API] Failed to post to /api/orders:", apiErr);
+  }
+
+  // 2. Also trigger customer data sync as backup
   d1.saveCustomerData({
     fname: input.name.split(" ")[0] || input.name,
     lname: input.name.split(" ").slice(1).join(" ") || "",
@@ -184,22 +220,58 @@ export function rememberMyTracking(tracking: string) {
 export async function getMyOrders(): Promise<Order[]> {
   const trackings = getMyTrackings();
   if (trackings.length === 0) return [];
-  const localList = getLocalOrders();
-  return localList.filter((o) => trackings.includes(o.tracking));
+  const all = await getAllOrders();
+  return all.filter((o) => trackings.some((t) => t.toUpperCase() === o.tracking.toUpperCase()));
 }
 
 export async function findOrder(tracking: string): Promise<Order | null> {
   const normalized = tracking.trim().toUpperCase();
+  try {
+    const res = await fetch(`/api/orders/${encodeURIComponent(normalized)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.order) {
+        saveLocalOrder(data.order);
+        return data.order;
+      }
+    }
+  } catch (err) {
+    console.warn("[Orders API] Error fetching single order:", err);
+  }
+
   const localList = getLocalOrders();
   return localList.find((o) => o.tracking.toUpperCase() === normalized) || null;
 }
 
 export async function getAllOrders(): Promise<Order[]> {
+  try {
+    const res = await fetch("/api/orders");
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.orders) && data.orders.length > 0) {
+        // Sync to local storage
+        data.orders.forEach((o: Order) => saveLocalOrder(o));
+        return data.orders;
+      }
+    }
+  } catch (err) {
+    console.warn("[Orders API] Error fetching all orders:", err);
+  }
   return getLocalOrders();
 }
 
 export async function updateOrderStatus(tracking: string, status: OrderStatus): Promise<void> {
   const normalized = tracking.trim().toUpperCase();
+  try {
+    await fetch(`/api/orders/${encodeURIComponent(normalized)}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+  } catch (err) {
+    console.warn("[Orders API] Error updating status:", err);
+  }
+
   const localList = getLocalOrders();
   const order = localList.find((o) => o.tracking.toUpperCase() === normalized);
   if (order) {
