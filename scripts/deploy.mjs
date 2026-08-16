@@ -136,10 +136,26 @@ try {
     if (wranglerConfig.assets) {
       wranglerConfig.assets.not_found_handling = "none";
     }
+    wranglerConfig.vars = wranglerConfig.vars || {};
     if (deployEnv.GEMINI_API_KEY) {
-      wranglerConfig.vars = wranglerConfig.vars || {};
       wranglerConfig.vars.GEMINI_API_KEY = deployEnv.GEMINI_API_KEY;
     }
+    wranglerConfig.vars.ADMIN_USERNAME = deployEnv.ADMIN_USERNAME || "admin";
+    wranglerConfig.vars.ADMIN_PASSWORD = deployEnv.ADMIN_PASSWORD || "admin123456";
+    wranglerConfig.d1_databases = [
+      {
+        binding: "DB",
+        database_name: "teenliwa-db",
+        database_id: "93122110-3ccd-4de5-b607-48ee369e3e3a",
+      },
+    ];
+    wranglerConfig.services = [
+      {
+        binding: "Todo_list",
+        service: "to-do-list-kv-template",
+        environment: "production",
+      },
+    ];
     fs.writeFileSync("dist/server/wrangler.json", JSON.stringify(wranglerConfig, null, 2));
     console.log(
       "Configured dist/server/wrangler.json (main = worker.mjs, assets.not_found_handling = none)",

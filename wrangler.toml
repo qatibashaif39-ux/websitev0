@@ -11,4 +11,18 @@ not_found_handling = "single-page-application"
 [vars]
 ENVIRONMENT = "production"
 STORE_NAME = "teenliwa"
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123456"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "teenliwa-db"
+database_id = "93122110-3ccd-4de5-b607-48ee369e3e3a"
+
+[[services]]
+binding = "Todo_list"
+service = "to-do-list-kv-template"
+environment = "production"
+
+
 
